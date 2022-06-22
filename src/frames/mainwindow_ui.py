@@ -30,24 +30,41 @@ class MainWindowUI():
         self.master.setCentralWidget(frame)
 
         self.layout_h = QtWidgets.QHBoxLayout(frame)
-        self.layout_buttons = QtWidgets.QVBoxLayout(frame)
-        self.combo_analyze_1 = QtWidgets.QComboBox(frame)
-        self.combo_analyze_2 = QtWidgets.QComboBox(frame)
-        self.combo_analyze_3 = QtWidgets.QComboBox(frame)
-        self.combo_analyze_4 = QtWidgets.QComboBox(frame)
-        self.combo_analyze_5 = QtWidgets.QComboBox(frame)
-        self.layout_buttons.addWidget(self.combo_analyze_1)
-        self.layout_buttons.addWidget(self.combo_analyze_2)
-        self.layout_buttons.addWidget(self.combo_analyze_3)
-        self.layout_buttons.addWidget(self.combo_analyze_4)
-        self.layout_buttons.addWidget(self.combo_analyze_5)
-        self.layout_h.addLayout(self.layout_buttons, 1)
-        self.layout_h.addWidget(MplCanvas(frame), 5)
+        self.layout_grid = QtWidgets.QGridLayout(frame)
+
+        self.grid = list()
+        for i in range(5):
+            combo_measure = QtWidgets.QComboBox(frame)
+            self.layout_grid.addWidget(combo_measure, i, 0)
+            combo_channel = QtWidgets.QComboBox(frame)
+            self.layout_grid.addWidget(combo_channel, i, 1)
+            label = QtWidgets.QLabel(frame)
+            self.layout_grid.addWidget(label, i, 2)
+            self.grid.append({
+                "measure": combo_measure,
+                "channel": combo_channel,
+                "label": label
+            })
+
+        self.layout_h.addLayout(self.layout_grid, 1)
+        self.mpl_canvas = MplCanvas(frame)
+        self.layout_h.addWidget(self.mpl_canvas, 5)
         frame.setLayout(self.layout_h)
 
-        for c in [self.combo_analyze_1, self.combo_analyze_2, self.combo_analyze_3, self.combo_analyze_4, self.combo_analyze_5]:
-            c.addItem("Min")
-            c.addItem("Max")
+        for row in self.grid:
+            c = row["measure"]
+            c.addItem("Minimum")
+            c.addItem("Maximum")
+            c.addItem("Mean")
             c.addItem("Delta T")
             c.addItem("Pic-Pic")
             c.addItem("Integrale")
+
+            c = row["channel"]
+            c.addItem("1")
+
+    def set_channels(self, n_channels:int):
+        for row in self.grid:
+            c = row["channel"]
+            c.clear()
+            c.addItems(str(i + 1) for i in range(n_channels))
