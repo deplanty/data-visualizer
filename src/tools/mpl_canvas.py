@@ -1,6 +1,6 @@
 # import asl5000_utils as asl
 
-from PyQt5.QtCore import pyqtSignal
+from PySide6.QtCore import Signal
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -8,7 +8,7 @@ from matplotlib.widgets import SpanSelector
 
 
 class MplCanvas(FigureCanvasQTAgg):
-    signal_selection_changed = pyqtSignal(float, float)
+    signal_selection_changed = Signal(float, float)
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)

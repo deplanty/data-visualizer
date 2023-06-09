@@ -1,4 +1,5 @@
-from PyQt5 import QtWidgets
+from PySide6 import QtWidgets
+from PySide6.QtGui import QAction
 
 from src.tools import MplCanvas
 
@@ -12,16 +13,16 @@ class MainWindowUI():
 
         menubar = self.master.menuBar()
         menu_file = menubar.addMenu("Fichier")
-        self.menu_file_open = QtWidgets.QAction("Ouvrir...", self.master)
+        self.menu_file_open = QAction("Ouvrir...", self.master)
         self.menu_file_open.setShortcut("Ctrl+o")
         menu_file.addAction(self.menu_file_open)
-        # self.menu_file_save = QtWidgets.QAction("Sauvegarder", self.master)
+        # self.menu_file_save = QAction("Sauvegarder", self.master)
         # self.menu_file_save.setShortcut("Ctrl+s")
         # menu_file.addAction(self.menu_file_save)
-        # self.menu_file_saveas = QtWidgets.QAction("Sauvegarder sous...", self.master)
+        # self.menu_file_saveas = QAction("Sauvegarder sous...", self.master)
         # self.menu_file_saveas.setShortcut("Ctrl+Shift+s")
         # menu_file.addAction(self.menu_file_saveas)
-        self.menu_file_exit = QtWidgets.QAction("Quitter", self.master)
+        self.menu_file_exit = QAction("Quitter", self.master)
         self.menu_file_exit.setShortcut("Ctrl+q")
         menu_file.addAction(self.menu_file_exit)
 

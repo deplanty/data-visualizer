@@ -1,6 +1,9 @@
+#!venv/Scripts/python
+
+
 import sys
 
-from PyQt5 import QtWidgets
+from PySide6 import QtWidgets
 
 from src.frames import MainWindow
 
@@ -20,11 +23,10 @@ class Application(QtWidgets.QApplication):
         """
 
         self.window.show()
-        return self.exec_()
+        return self.exec()
 
 
 if __name__ == '__main__':
     # Start application
     app = Application(sys.argv)
-    exit_code = app.run()
-    sys.exit(exit_code)
+    sys.exit(app.run())
