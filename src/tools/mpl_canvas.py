@@ -1,10 +1,13 @@
 # import asl5000_utils as asl
+import re
 
 from PySide6.QtCore import Signal
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from matplotlib.widgets import SpanSelector
+
+from src.objects import DataContainer
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -14,7 +17,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         super(MplCanvas, self).__init__(self.fig)
 
-        self.data = [[1, 2, 3, 4], [8, 10, 6, 5], [0, 1, 0, 2]]  # x, y1, y2
+        self.toolbar = NavigationToolbar2QT(self)
+
+        self.data = DataContainer()
         self.axes = list()
         self.spans = list()
 
@@ -25,7 +30,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
     # Method
 
-    def load_file(self, filename:str):
+    def load_file(self, filename:str, selector):
         """
         Loads a file and plots it.
 
@@ -33,16 +38,47 @@ class MplCanvas(FigureCanvasQTAgg):
             filename (str): path to file.
         """
 
-        self.data = [[1, 2, 3, 4], [8, 10, 6, 5], [0, 1, 0, 2]]  # x, y1, y2
-        self.draw_data()
-        self.fig.canvas.draw()
+        can_draw = False
+
+        if selector == "CSV from Rigel Multoflo (*.csv)":
+            with open(filename, "r") as fid:
+                # 1 (x) + 4 (y) columns of data
+                self.data.init(size=4)
+
+                # 14 lines of useless header
+                for _ in range(14): fid.readline()
+                self.data.x.title = "Temps"
+                self.data.x.unit = "sec"
+                self.data.y[0].title = "Volume cumulé"
+                self.data.y[0].unit = "ml"
+                self.data.y[1].title = "Débit instantané"
+                self.data.y[1].unit = "ml/h"
+                self.data.y[2].title = "Debit moyen"
+                self.data.y[2].unit = "ml/h"
+                self.data.y[3].title = "Pression"
+                self.data.y[3].unit = "mmHg"
+
+                for line in fid:
+                    line = line.rstrip().split(",")
+                    # End when empty table line
+                    if line[0] == "":
+                        break
+                    # Add the 5 columns in data
+                    self.data.add_row(line[:5], x_index=0)
+
+                can_draw = True
+
+        if can_draw:
+            self.draw_data()
+            self.fig.canvas.draw()
 
     def draw_data(self):
-        rows = len(self.data)
-        self.axes.clear()
-        for i in range(1, rows):
-            ax = self.fig.add_subplot(rows - 1, 1, i)
-            ax.plot(self.data[0], self.data[i])
+        self.fig.clear()
+        self.axes = self.fig.subplots(len(self.data), 1, sharex=True)
+        for i, ax in enumerate(self.axes):
+            ax.plot(self.data.get_x_data(), self.data.get_y_data(i))
+            ax.set_ylabel(self.data.y[i].label)
+            ax.grid(linestyle="dashed")
             span = SpanSelector(
                 ax=ax,
                 onselect=self._on_selection_changed,
@@ -53,11 +89,13 @@ class MplCanvas(FigureCanvasQTAgg):
                 drag_from_anywhere=True,
                 onmove_callback=self._on_selection_changed
             )
-            self.axes.append(ax)
             self.spans.append(span)
 
+        self.fig.subplots_adjust(hspace=0)
+        self.axes[-1].set_xlabel(self.data.x.label)
+
     def get_n_channels(self) -> int:
-        return len(self.data) - 1
+        return len(self.data)
 
     def get_selection(self) -> list:
         return self.spans[0].extents

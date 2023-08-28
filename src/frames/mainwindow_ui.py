@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt
 
 from src.tools import MplCanvas
 
@@ -32,6 +33,7 @@ class MainWindowUI():
 
         self.layout_h = QtWidgets.QHBoxLayout(frame)
         self.layout_grid = QtWidgets.QGridLayout(frame)
+        # self.layout_grid.setVerticalSpacing(0)
 
         self.grid = list()
         for i in range(5):
@@ -40,16 +42,22 @@ class MainWindowUI():
             combo_channel = QtWidgets.QComboBox(frame)
             self.layout_grid.addWidget(combo_channel, i, 1)
             label = QtWidgets.QLabel(frame)
+            label.setFixedWidth(50)
             self.layout_grid.addWidget(label, i, 2)
             self.grid.append({
                 "measure": combo_measure,
                 "channel": combo_channel,
                 "label": label
             })
+        verticalSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.layout_grid.addItem(verticalSpacer, i + 1, 0)
 
         self.layout_h.addLayout(self.layout_grid, 1)
+        self.layout_v_graph = QtWidgets.QVBoxLayout()
         self.mpl_canvas = MplCanvas(frame)
-        self.layout_h.addWidget(self.mpl_canvas, 5)
+        self.layout_v_graph.addWidget(self.mpl_canvas)
+        self.layout_v_graph.addWidget(self.mpl_canvas.toolbar)
+        self.layout_h.addLayout(self.layout_v_graph, 5)
         frame.setLayout(self.layout_h)
 
         for row in self.grid:

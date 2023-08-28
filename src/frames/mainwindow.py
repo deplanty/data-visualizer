@@ -23,12 +23,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close()
 
     def _on_menu_file_open_triggered(self):
-        result = QtWidgets.QFileDialog.getOpenFileName(self, "Open a file", "", "All Files (*.*)")
-        filename = result[0]
+        valid_files = ";;".join([
+            "CSV from Rigel Multoflo (*.csv)",
+            "All Files (*.*)",
+        ])
+        filename, selector = QtWidgets.QFileDialog.getOpenFileName(self, "Open a file", "", valid_files)
         if not filename:
             return
 
-        self.ui.mpl_canvas.load_file(filename)
+        self.ui.mpl_canvas.load_file(filename, selector)
         self.ui.set_channels(self.ui.mpl_canvas.get_n_channels())
 
     def _on_selection_changed(self, xmin:float, xmax:float):
@@ -39,7 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
             xmin (float): miniumum x value.
             xmax (float): maximum x value.
         """
-        # Check if the selection is set of not
+        # Check if the selection is set or not
         if xmin == xmax:
             for span in self.ui.mpl_canvas.spans:
                 span.extents = (0, 0)
@@ -59,18 +62,24 @@ class MainWindow(QtWidgets.QMainWindow):
     def process_measures(self, xmin:float, xmax:float):
         # Process the selection
         data = self.ui.mpl_canvas.data
-        x = data[0]
+        x = data.get_x_data()
 
         i_min, i_max = np.searchsorted(x, (xmin, xmax))
         i_max = min(len(x) - 1, i_max)
         if i_min == i_max:
             return
-        # region_x = x[i_min:i_max]
+        if i_min > i_max:
+            i_min, i_max = i_max, i_min
 
+        # Allow to take the last value
+        if xmax > np.max(x):
+            i_max += 1
+
+        region_x = x[i_min:i_max]
         for row in self.ui.grid:
             measure = row["measure"].currentText()
-            channel = int(row["channel"].currentText())
-            region_y = data[channel][i_min:i_max]
+            channel = int(row["channel"].currentText()) - 1
+            region_y = data.get_y_data(channel, (i_min, i_max))
             value = 0.0
             if measure == "Minimum":
                 value = np.min(region_y)
@@ -78,4 +87,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 value = np.max(region_y)
             elif measure == "Mean":
                 value = np.mean(region_y)
+            elif measure == "Delta T":
+                value = np.max(region_x) - np.min(region_x)
             row["label"].setText(f"{value:0.5f}")
