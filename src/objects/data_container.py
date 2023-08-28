@@ -3,11 +3,13 @@ class DataColumn:
     _values: list[float]
     title: str
     unit: str
+    show: bool
 
     def __init__(self):
         self._values = list()
         self.title = str()
         self.unit = str()
+        self.show = True
 
     def __str__(self):
         n = len(self._values)
@@ -54,7 +56,7 @@ class DataColumn:
         self.title = ""
         self.unit = ""
 
-    def set(self, values:list=None, title:str=None, unit:str=None):
+    def set(self, values:list=None, title:str=None, unit:str=None, show:bool=None):
         """
         Set the values for the parameters.
 
@@ -73,6 +75,9 @@ class DataColumn:
 
         if unit is not None:
             self.unit = unit
+
+        if show is not None:
+            self.show = show
 
 
 class DataContainer:
@@ -120,6 +125,13 @@ class DataContainer:
 
         for i, value in enumerate(values):
             self._y[i].values.append(float(value))
+
+    def size(self, only_show=False):
+        if only_show:
+            return sum([1 for y in self._y if y.show])
+        else:
+            return len(self._y)
+
 
 
 if __name__ == '__main__':

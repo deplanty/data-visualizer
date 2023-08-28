@@ -47,16 +47,21 @@ class MplCanvas(FigureCanvasQTAgg):
 
                 # 14 lines of useless header
                 for _ in range(14): fid.readline()
+                # Add metadata
                 self.data.x.title = "Temps"
                 self.data.x.unit = "sec"
                 self.data.y[0].title = "Volume cumulé"
                 self.data.y[0].unit = "ml"
+                self.data.y[0].show = True
                 self.data.y[1].title = "Débit instantané"
                 self.data.y[1].unit = "ml/h"
+                self.data.y[1].show = True
                 self.data.y[2].title = "Debit moyen"
                 self.data.y[2].unit = "ml/h"
+                self.data.y[2].show = False
                 self.data.y[3].title = "Pression"
                 self.data.y[3].unit = "mmHg"
+                self.data.y[3].show = False
 
                 for line in fid:
                     line = line.rstrip().split(",")
@@ -74,10 +79,16 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def draw_data(self):
         self.fig.clear()
-        self.axes = self.fig.subplots(len(self.data), 1, sharex=True)
-        for i, ax in enumerate(self.axes):
-            ax.plot(self.data.get_x_data(), self.data.get_y_data(i))
-            ax.set_ylabel(self.data.y[i].label)
+        self.axes = self.fig.subplots(self.data.size(only_show=True), 1, sharex=True)
+
+        i = 0
+        for j, y in enumerate(self.data.y):
+            # Continue if the axis should not be shown
+            if not y.show:
+                continue
+            ax = self.axes[i]
+            ax.plot(self.data.get_x_data(), self.data.get_y_data(j))
+            ax.set_ylabel(self.data.y[j].label)
             ax.grid(linestyle="dashed")
             span = SpanSelector(
                 ax=ax,
@@ -90,6 +101,7 @@ class MplCanvas(FigureCanvasQTAgg):
                 onmove_callback=self._on_selection_changed
             )
             self.spans.append(span)
+            i += 1
 
         self.fig.subplots_adjust(hspace=0)
         self.axes[-1].set_xlabel(self.data.x.label)
