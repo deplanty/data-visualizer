@@ -23,6 +23,8 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes = list()
         self.spans = list()
 
+        self.load_file("test/dummy.csv", "CSV from Rigel Multoflo (*.csv)")
+
     # Events
 
     def _on_selection_changed(self, xmin, xmax):

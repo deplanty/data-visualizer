@@ -26,6 +26,11 @@ class MainWindowUI():
         self.menu_file_exit = QAction("Quitter", self.master)
         self.menu_file_exit.setShortcut("Ctrl+q")
         menu_file.addAction(self.menu_file_exit)
+        
+        menu_view = menubar.addMenu("Affichage")
+        self.menu_view_show_channels = QAction("Afficher les canaux...", self.master)
+        menu_view.addAction(self.menu_view_show_channels)
+
 
 
         frame = QtWidgets.QWidget(self.master)

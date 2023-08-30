@@ -3,6 +3,8 @@ from PySide6 import QtWidgets
 
 from .mainwindow_ui import MainWindowUI
 
+from src.windows import ViewShowChannels
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -12,6 +14,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.ui.menu_file_open.triggered.connect(self._on_menu_file_open_triggered)
         self.ui.menu_file_exit.triggered.connect(self._on_menu_file_exit_triggered)
+        self.ui.menu_view_show_channels.triggered.connect(self._on_menu_view_show_channels)
         self.ui.mpl_canvas.signal_selection_changed.connect(self._on_selection_changed)
         for row in self.ui.grid:
             row["measure"].activated.connect(self.on_combobox_changed)
@@ -33,6 +36,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.ui.mpl_canvas.load_file(filename, selector)
         self.ui.set_channels(self.ui.mpl_canvas.get_n_channels())
+
+    def _on_menu_view_show_channels(self):
+        channels = list()
+        for channel in self.ui.mpl_canvas.data.y:
+            channels.append([channel.label, channel.show])
+
+        self.w = ViewShowChannels(channels)
+        self.w.exec()
+        channels = self.w.get()
+        if channels:
+            # TODO: change graph to  show only selected channels
+            ...
+
 
     def _on_selection_changed(self, xmin:float, xmax:float):
         """
