@@ -19,11 +19,8 @@ class MplCanvas(FigureCanvasQTAgg):
 
         self.toolbar = NavigationToolbar2QT(self)
 
-        self.data = DataContainer()
         self.axes = list()
         self.spans = list()
-
-        self.load_file("test/dummy.csv", "CSV from Rigel Multoflo (*.csv)")
 
     # Events
 
@@ -32,65 +29,25 @@ class MplCanvas(FigureCanvasQTAgg):
 
     # Method
 
-    def load_file(self, filename:str, selector):
-        """
-        Loads a file and plots it.
-
-        Args:
-            filename (str): path to file.
-        """
-
-        can_draw = False
-
-        if selector == "CSV from Rigel Multoflo (*.csv)":
-            with open(filename, "r") as fid:
-                # 1 (x) + 4 (y) columns of data
-                self.data.init(size=4)
-
-                # 14 lines of useless header
-                for _ in range(14): fid.readline()
-                # Add metadata
-                self.data.x.title = "Temps"
-                self.data.x.unit = "sec"
-                self.data.y[0].title = "Volume cumulé"
-                self.data.y[0].unit = "ml"
-                self.data.y[0].show = True
-                self.data.y[1].title = "Débit instantané"
-                self.data.y[1].unit = "ml/h"
-                self.data.y[1].show = True
-                self.data.y[2].title = "Debit moyen"
-                self.data.y[2].unit = "ml/h"
-                self.data.y[2].show = False
-                self.data.y[3].title = "Pression"
-                self.data.y[3].unit = "mmHg"
-                self.data.y[3].show = False
-
-                for line in fid:
-                    line = line.rstrip().split(",")
-                    # End when empty table line
-                    if line[0] == "":
-                        break
-                    # Add the 5 columns in data
-                    self.data.add_row(line[:5], x_index=0)
-
-                can_draw = True
-
-        if can_draw:
-            self.draw_data()
-            self.fig.canvas.draw()
-
-    def draw_data(self):
+    def draw_data(self, data:DataContainer):
         self.fig.clear()
-        self.axes = self.fig.subplots(self.data.size(only_show=True), 1, sharex=True)
+        rows = data.size(only_show=True)
+        if rows == 0:
+            self.fig.canvas.draw()
+            return
+        elif rows == 1:
+            self.axes = [self.fig.subplots(data.size(only_show=True), 1, sharex=True)]
+        else:
+            self.axes = self.fig.subplots(data.size(only_show=True), 1, sharex=True)
 
         i = 0
-        for j, y in enumerate(self.data.y):
+        for j, y in enumerate(data.y):
             # Continue if the axis should not be shown
             if not y.show:
                 continue
             ax = self.axes[i]
-            ax.plot(self.data.get_x_data(), self.data.get_y_data(j))
-            ax.set_ylabel(self.data.y[j].label)
+            ax.plot(data.get_x_data(), data.get_y_data(j))
+            ax.set_ylabel(data.y[j].label)
             ax.grid(linestyle="dashed")
             span = SpanSelector(
                 ax=ax,
@@ -105,11 +62,9 @@ class MplCanvas(FigureCanvasQTAgg):
             self.spans.append(span)
             i += 1
 
+        self.axes[-1].set_xlabel(data.x.label)
         self.fig.subplots_adjust(hspace=0)
-        self.axes[-1].set_xlabel(self.data.x.label)
-
-    def get_n_channels(self) -> int:
-        return len(self.data)
+        self.fig.canvas.draw()
 
     def get_selection(self) -> list:
         return self.spans[0].extents

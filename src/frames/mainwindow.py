@@ -3,6 +3,8 @@ from PySide6 import QtWidgets
 
 from .mainwindow_ui import MainWindowUI
 
+from src.objects.enums import FileType
+from src.objects import DataLoader, DataContainer
 from src.windows import ViewShowChannels
 
 
@@ -10,8 +12,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.ui = MainWindowUI(self)
+        self.data = DataContainer()
+        self.dataloader = DataLoader()
 
+        self.ui = MainWindowUI(self)
         self.ui.menu_file_open.triggered.connect(self._on_menu_file_open_triggered)
         self.ui.menu_file_exit.triggered.connect(self._on_menu_file_exit_triggered)
         self.ui.menu_view_show_channels.triggered.connect(self._on_menu_view_show_channels)
@@ -19,6 +23,8 @@ class MainWindow(QtWidgets.QMainWindow):
         for row in self.ui.grid:
             row["measure"].activated.connect(self.on_combobox_changed)
             row["channel"].activated.connect(self.on_combobox_changed)
+
+        self.load_from_file("test/dummy.csv", FileType.CSV_RigelMultiflo)
 
     # Events
 
@@ -30,25 +36,26 @@ class MainWindow(QtWidgets.QMainWindow):
             "CSV from Rigel Multoflo (*.csv)",
             "All Files (*.*)",
         ])
-        filename, selector = QtWidgets.QFileDialog.getOpenFileName(self, "Open a file", "", valid_files)
+        filename, file_type = QtWidgets.QFileDialog.getOpenFileName(self, "Open a file", "", valid_files)
         if not filename:
             return
 
-        self.ui.mpl_canvas.load_file(filename, selector)
-        self.ui.set_channels(self.ui.mpl_canvas.get_n_channels())
+        self.load_from_file(filename, file_type)
 
     def _on_menu_view_show_channels(self):
         channels = list()
-        for channel in self.ui.mpl_canvas.data.y:
+        for channel in self.data.y:
             channels.append([channel.label, channel.show])
 
-        self.w = ViewShowChannels(channels)
-        self.w.exec()
-        channels = self.w.get()
+        dialog = ViewShowChannels(channels)
+        dialog.exec()
+        channels = dialog.get()
         if channels:
-            # TODO: change graph to  show only selected channels
-            ...
-
+            # Change data `show` parameter
+            for y, (channel, show) in zip(self.data.y, channels):
+                y.set(show=show)
+            # Redraw to show only selected channels
+            self.ui.mpl_canvas.draw_data(self.data)
 
     def _on_selection_changed(self, xmin:float, xmax:float):
         """
@@ -75,10 +82,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Methods
 
+    def load_from_file(self, filename:str, file_type:str):
+        self.data = self.dataloader.load_from_file(filename, file_type)
+        self.ui.mpl_canvas.draw_data(self.data)
+        self.ui.set_channels(len(self.data))
+
     def process_measures(self, xmin:float, xmax:float):
         # Process the selection
-        data = self.ui.mpl_canvas.data
-        x = data.get_x_data()
+        x = self.data.get_x_data()
 
         i_min, i_max = np.searchsorted(x, (xmin, xmax))
         i_max = min(len(x) - 1, i_max)
@@ -95,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for row in self.ui.grid:
             measure = row["measure"].currentText()
             channel = int(row["channel"].currentText()) - 1
-            region_y = data.get_y_data(channel, (i_min, i_max))
+            region_y = self.data.get_y_data(channel, (i_min, i_max))
             value = 0.0
             if measure == "Minimum":
                 value = np.min(region_y)
