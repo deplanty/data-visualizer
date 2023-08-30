@@ -1,22 +1,27 @@
-from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QCheckBox, QPushButton
+from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox, QPushButton
 from PySide6.QtCore import Qt
 
 
 class ViewShowChannelsUI:
     def __init__(self, parent:QWidget, channels):
         layout = QVBoxLayout()
+        # Text to explain this window
+        label = QLabel("Sélectionner les canaux à afficher :")
+        layout.addWidget(label)
 
         # Add the checkboxes for the channels
-        lvb_check = QVBoxLayout()
+        lvb_check = QGridLayout()
         self.checkboxes = list()
-        for channel, state in channels:
+        for row, (channel, state) in enumerate(channels, 1):
+            label = QLabel(f"Canal {row}:")
+            lvb_check.addWidget(label, row, 0)
             checkbox = QCheckBox(channel, parent)
             checkbox.setTristate(False)
             if state:
                 checkbox.setCheckState(Qt.Checked)
             else:
                 checkbox.setCheckState(Qt.Unchecked)
-            lvb_check.addWidget(checkbox)
+            lvb_check.addWidget(checkbox, row, 1)
             self.checkboxes.append(checkbox)
         layout.addLayout(lvb_check)
 
