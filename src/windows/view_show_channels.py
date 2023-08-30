@@ -1,5 +1,8 @@
-from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox, QPushButton
+from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox, QPushButton, QColorDialog
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
+
+from src.objects import DataContainer
 
 
 class ViewShowChannelsUI:
@@ -10,20 +13,21 @@ class ViewShowChannelsUI:
         layout.addWidget(label)
 
         # Add the checkboxes for the channels
-        lvb_check = QGridLayout()
+        lg_check = QGridLayout()
         self.checkboxes = list()
-        for row, (channel, state) in enumerate(channels, 1):
+        self.buttons = list()
+        for row, channel in enumerate(channels.y, 1):
             label = QLabel(f"Canal {row}:")
-            lvb_check.addWidget(label, row, 0)
-            checkbox = QCheckBox(channel, parent)
+            lg_check.addWidget(label, row, 0)
+            checkbox = QCheckBox(channel.label, parent)
             checkbox.setTristate(False)
-            if state:
-                checkbox.setCheckState(Qt.Checked)
-            else:
-                checkbox.setCheckState(Qt.Unchecked)
-            lvb_check.addWidget(checkbox, row, 1)
+            checkbox.setCheckState(Qt.Checked if channel.show else Qt.Unchecked)
+            lg_check.addWidget(checkbox, row, 1)
+            button = QPushButton()
+            self.buttons.append(button)
+            lg_check.addWidget(button, row, 2)
             self.checkboxes.append(checkbox)
-        layout.addLayout(lvb_check)
+        layout.addLayout(lg_check)
 
         # Add action buttons
         lhb_buttun = QHBoxLayout()
@@ -37,28 +41,46 @@ class ViewShowChannelsUI:
 
 
 class ViewShowChannels(QDialog):
-    def __init__(self, channels:list[str, bool]):
+    def __init__(self, data:DataContainer):
         super().__init__()
 
-        self.channels = None
+        self.data = data
+        self._changed = False
 
-        self.ui = ViewShowChannelsUI(self, channels)
+        self.ui = ViewShowChannelsUI(self, data)
+        for i, button in enumerate(self.ui.buttons):
+            button.clicked.connect(lambda: self._on_btn_color_select_clicked_for(i))
         self.ui.btn_validate.clicked.connect(self._on_btn_validate_clicked)
         self.ui.btn_cancel.clicked.connect(self._on_btn_cancel_clicked)
 
     # Events
 
     def _on_btn_validate_clicked(self):
-        channels = list()
-        for check in self.ui.checkboxes:
-            channels.append([check.text(), check.checkState() == Qt.Checked])
+        for check, y in zip(self.ui.checkboxes, self.data.y):
+            y.set(show=check.checkState() == Qt.Checked)
+
+        self._changed = True
         self.close()
-        self.channels = channels
 
     def _on_btn_cancel_clicked(self):
+        self._changed = False
         self.close()
+
+    def _on_btn_color_select_clicked_for(self, index:int):
+        dialog = QColorDialog()
+        dialog.setCurrentColor(QColor(*self._to_int_color(self.data.y[index].color)))
+        dialog.exec()
+        color = dialog.selectedColor()
+        if color.isValid():
+            self.data.y[index].color = self._to_float_color(color.toTuple())
 
     # Methods
 
-    def get(self):
-        return self.channels
+    def has_changed(self):
+        return self._changed
+
+    def _to_int_color(self, color:list):
+        return [int(x * 255) for x in color]
+
+    def _to_float_color(self, color:list):
+        return [x / 255 for x in color]

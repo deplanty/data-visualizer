@@ -4,12 +4,14 @@ class DataColumn:
     title: str
     unit: str
     show: bool
+    color: str
 
     def __init__(self):
         self._values = list()
         self.title = str()
         self.unit = str()
         self.show = True
+        self.color = (1, 0, 0, 1)
 
     def __str__(self):
         n = len(self._values)

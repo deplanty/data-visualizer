@@ -43,17 +43,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_from_file(filename, file_type)
 
     def _on_menu_view_show_channels(self):
-        channels = list()
-        for channel in self.data.y:
-            channels.append([channel.label, channel.show])
-
-        dialog = ViewShowChannels(channels)
+        dialog = ViewShowChannels(self.data)
         dialog.exec()
-        channels = dialog.get()
-        if channels:
-            # Change data `show` parameter
-            for y, (channel, show) in zip(self.data.y, channels):
-                y.set(show=show)
+        if dialog.has_changed():
             # Redraw to show only selected channels
             self.ui.mpl_canvas.draw_data(self.data)
 

@@ -41,13 +41,13 @@ class MplCanvas(FigureCanvasQTAgg):
             self.axes = self.fig.subplots(data.size(only_show=True), 1, sharex=True)
 
         i = 0
-        for j, y in enumerate(data.y):
+        for channel in data.y:
             # Continue if the axis should not be shown
-            if not y.show:
+            if not channel.show:
                 continue
             ax = self.axes[i]
-            ax.plot(data.get_x_data(), data.get_y_data(j))
-            ax.set_ylabel(data.y[j].label)
+            ax.plot(data.get_x_data(), channel.values, color=channel.color)
+            ax.set_ylabel(channel.label)
             ax.grid(linestyle="dashed")
             span = SpanSelector(
                 ax=ax,
