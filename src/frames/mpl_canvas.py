@@ -75,7 +75,7 @@ class MplCanvas(FigureCanvasQTAgg):
                 onselect=self._on_selection_changed,
                 direction="horizontal",
                 useblit=True,
-                props={"alpha": 0.2, "facecolor":"grey"},
+                props={"alpha": 0.2, "facecolor":"grey", "linewidth": 0.75},
                 interactive=True,
                 drag_from_anywhere=True,
                 onmove_callback=self._on_selection_changed
