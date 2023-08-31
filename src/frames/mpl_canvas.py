@@ -4,12 +4,15 @@ import itertools
 
 from PySide6.QtCore import Signal
 
+import matplotlib as mpl
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from matplotlib.widgets import SpanSelector
 
 from src.objects import DataContainer
 from src.tools import colors
+
+mpl.rc("lines", linewidth=0.5)
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -66,7 +69,6 @@ class MplCanvas(FigureCanvasQTAgg):
                 data.get_x_data(),
                 channel.values,
                 color=channel.color.rgb,
-                linewidth=0.75,
             )
             ax.set_ylabel(channel.label)
             ax.grid(which="major", linestyle="dashed", linewidth=0.5)
@@ -75,7 +77,7 @@ class MplCanvas(FigureCanvasQTAgg):
                 onselect=self._on_selection_changed,
                 direction="horizontal",
                 useblit=True,
-                props={"alpha": 0.2, "facecolor":"grey", "linewidth": 0.75},
+                props=dict(facecolor="black", alpha=0.05),
                 interactive=True,
                 drag_from_anywhere=True,
                 onmove_callback=self._on_selection_changed
