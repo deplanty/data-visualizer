@@ -2,7 +2,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
-from src.tools import MplCanvas
+from .mpl_canvas import MplCanvas
 
 
 class MainWindowUI():
