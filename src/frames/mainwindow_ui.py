@@ -45,10 +45,15 @@ class MainWindowUI():
 
         self.grid = list()
         for i in range(5):
+            # Mesure function to use
             combo_measure = QtWidgets.QComboBox()
+            combo_measure.setFixedWidth(100)
             self.layout_grid.addWidget(combo_measure, i, 0)
+            # On which channel the measure is done
             combo_channel = QtWidgets.QComboBox()
+            combo_channel.setFixedWidth(40)
             self.layout_grid.addWidget(combo_channel, i, 1)
+            # Result of the measure
             label = QtWidgets.QLabel()
             label.setFixedWidth(50)
             self.layout_grid.addWidget(label, i, 2)
@@ -57,9 +62,11 @@ class MainWindowUI():
                 "channel": combo_channel,
                 "label": label
             })
+        # Space to put the rows on top of the widget
         verticalSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.layout_grid.addItem(verticalSpacer, i + 1, 0)
 
+        # Graph and navigation toolbox
         self.layout_h.addLayout(self.layout_grid, 1)
         self.layout_v_graph = QtWidgets.QVBoxLayout()
         self.mpl_canvas = MplCanvas()
@@ -68,6 +75,7 @@ class MainWindowUI():
         self.layout_h.addLayout(self.layout_v_graph, 5)
         frame.setLayout(self.layout_h)
 
+        # Add the parameters in the comboboxes
         for row in self.grid:
             c = row["measure"]
             for name in AnalyseType.list_all():
