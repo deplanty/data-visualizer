@@ -1,5 +1,6 @@
 # import asl5000_utils as asl
 import re
+import itertools
 
 from PySide6.QtCore import Signal
 
@@ -8,10 +9,21 @@ from matplotlib.figure import Figure
 from matplotlib.widgets import SpanSelector
 
 from src.objects import DataContainer
+from src.tools import colors
 
 
 class MplCanvas(FigureCanvasQTAgg):
     signal_selection_changed = Signal(float, float)
+
+    ch_colors = itertools.cycle([
+        colors.RED,
+        colors.GREEN,
+        colors.BLUE,
+        colors.YELLOW,
+        colors.PURPLE,
+        colors.CYAN,
+    ])
+
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
@@ -32,6 +44,7 @@ class MplCanvas(FigureCanvasQTAgg):
     def draw_data(self, data:DataContainer):
         self.fig.clear()
         rows = data.size(only_show=True)
+        # Manage subplot return value
         if rows == 0:
             self.fig.canvas.draw()
             return
@@ -40,15 +53,23 @@ class MplCanvas(FigureCanvasQTAgg):
         else:
             self.axes = self.fig.subplots(data.size(only_show=True), 1, sharex=True)
 
+        # Draw the channels
         i = 0
         for channel in data.y:
             # Continue if the axis should not be shown
             if not channel.show:
                 continue
             ax = self.axes[i]
-            ax.plot(data.get_x_data(), channel.values, color=channel.color)
+            if channel.color is None:
+                channel.color = next(self.ch_colors)
+            ax.plot(
+                data.get_x_data(),
+                channel.values,
+                color=channel.color.rgb,
+                linewidth=0.75,
+            )
             ax.set_ylabel(channel.label)
-            ax.grid(linestyle="dashed")
+            ax.grid(which="major", linestyle="dashed", linewidth=0.5)
             span = SpanSelector(
                 ax=ax,
                 onselect=self._on_selection_changed,

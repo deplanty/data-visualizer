@@ -1,17 +1,19 @@
+from src.tools import colors
+
 
 class DataColumn:
     _values: list[float]
     title: str
     unit: str
     show: bool
-    color: str
+    color: colors.Color
 
     def __init__(self):
         self._values = list()
         self.title = str()
         self.unit = str()
         self.show = True
-        self.color = (1, 0, 0, 1)
+        self.color = None
 
     def __str__(self):
         n = len(self._values)
@@ -37,7 +39,6 @@ class DataColumn:
     def values(self):
         return self._values
 
-
     @property
     def label(self):
         if self.title and self.unit:
@@ -58,7 +59,7 @@ class DataColumn:
         self.title = ""
         self.unit = ""
 
-    def set(self, values:list=None, title:str=None, unit:str=None, show:bool=None):
+    def set(self, values:list=None, title:str=None, unit:str=None, show:bool=None, color:tuple=None):
         """
         Set the values for the parameters.
 
@@ -80,6 +81,9 @@ class DataColumn:
 
         if show is not None:
             self.show = show
+
+        if color is not None:
+            self.color = color
 
 
 class DataContainer:

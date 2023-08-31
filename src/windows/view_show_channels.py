@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
 from src.objects import DataContainer
+from src.tools import colors
 
 
 class ViewShowChannelsUI:
@@ -49,7 +50,10 @@ class ViewShowChannels(QDialog):
 
         self.ui = ViewShowChannelsUI(self, data)
         for i, button in enumerate(self.ui.buttons):
-            button.clicked.connect(lambda: self._on_btn_color_select_clicked_for(i))
+            print(f"for i={i}")
+            func = lambda index=1: self._on_btn_color_select_clicked_for(index)
+            button.clicked.connect(func)
+            button.setStyleSheet(f"background-color: {colors.RED.hex};")
         self.ui.btn_validate.clicked.connect(self._on_btn_validate_clicked)
         self.ui.btn_cancel.clicked.connect(self._on_btn_cancel_clicked)
 
@@ -67,20 +71,17 @@ class ViewShowChannels(QDialog):
         self.close()
 
     def _on_btn_color_select_clicked_for(self, index:int):
+        print("This is index", index)
         dialog = QColorDialog()
-        dialog.setCurrentColor(QColor(*self._to_int_color(self.data.y[index].color)))
+        dialog.setCurrentColor(QColor(*self.data.y[index].color.rgb_int))
         dialog.exec()
         color = dialog.selectedColor()
         if color.isValid():
-            self.data.y[index].color = self._to_float_color(color.toTuple())
+            print(index)
+            color = color.toTuple()
+            self.data.y[index].set(color=colors.from_rgba_int(color))
 
     # Methods
 
     def has_changed(self):
         return self._changed
-
-    def _to_int_color(self, color:list):
-        return [int(x * 255) for x in color]
-
-    def _to_float_color(self, color:list):
-        return [x / 255 for x in color]
