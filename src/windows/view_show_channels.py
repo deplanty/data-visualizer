@@ -10,7 +10,7 @@ class ViewShowChannelsUI:
     def __init__(self, parent:QWidget, channels):
         layout = QVBoxLayout()
         # Text to explain this window
-        label = QLabel("Sélectionner les canaux à afficher :")
+        label = QLabel("Configure the channels settings:")
         layout.addWidget(label)
 
         # Add the checkboxes for the channels
@@ -18,7 +18,7 @@ class ViewShowChannelsUI:
         self.checkboxes = list()
         self.buttons = list()
         for row, channel in enumerate(channels.y, 1):
-            label = QLabel(f"Canal {row}:")
+            label = QLabel(f"Channel {row}:")
             lg_check.addWidget(label, row, 0)
             checkbox = QCheckBox(channel.label, parent)
             checkbox.setTristate(False)
@@ -32,9 +32,9 @@ class ViewShowChannelsUI:
 
         # Add action buttons
         lhb_buttun = QHBoxLayout()
-        self.btn_validate = QPushButton("Valider")
+        self.btn_validate = QPushButton("Confitrm")
         lhb_buttun.addWidget(self.btn_validate)
-        self.btn_cancel = QPushButton("Annuler")
+        self.btn_cancel = QPushButton("Cancel")
         lhb_buttun.addWidget(self.btn_cancel)
         layout.addLayout(lhb_buttun)
 

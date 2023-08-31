@@ -14,29 +14,31 @@ class MainWindowUI():
         self.master.setWindowTitle("Data visualizer")
         self.master.resize(800, 600)
 
+        # Top menu
         menubar = self.master.menuBar()
-        menu_file = menubar.addMenu("Fichier")
-        self.menu_file_open = QAction("Ouvrir...", self.master)
+        menu_file = menubar.addMenu("File")
+        self.menu_file_open = QAction("Open...")
         self.menu_file_open.setShortcut("Ctrl+o")
         menu_file.addAction(self.menu_file_open)
-        # self.menu_file_save = QAction("Sauvegarder", self.master)
+        # self.menu_file_save = QAction("Save", self.master)
         # self.menu_file_save.setShortcut("Ctrl+s")
         # menu_file.addAction(self.menu_file_save)
-        # self.menu_file_saveas = QAction("Sauvegarder sous...", self.master)
+        # self.menu_file_saveas = QAction("Save as...", self.master)
         # self.menu_file_saveas.setShortcut("Ctrl+Shift+s")
         # menu_file.addAction(self.menu_file_saveas)
-        self.menu_file_exit = QAction("Quitter", self.master)
+        self.menu_file_exit = QAction("Quit")
         self.menu_file_exit.setShortcut("Ctrl+q")
         menu_file.addAction(self.menu_file_exit)
 
-        menu_view = menubar.addMenu("Affichage")
-        self.menu_view_show_channels = QAction("Afficher les canaux...", self.master)
+        menu_view = menubar.addMenu("View")
+        self.menu_view_show_channels = QAction("Channels settings...")
         menu_view.addAction(self.menu_view_show_channels)
 
-
+        # Main widget
         frame = QtWidgets.QWidget()
         self.master.setCentralWidget(frame)
 
+        # Fill the main widget
         self.layout_h = QtWidgets.QHBoxLayout()
         self.layout_grid = QtWidgets.QGridLayout()
         # self.layout_grid.setVerticalSpacing(0)

@@ -20,12 +20,12 @@ class DataLoader:
             # 14 lines of useless header
             for _ in range(14): fid.readline()
             # Add metadata
-            self.data.x.title = "Temps"
+            self.data.x.title = "Time"
             self.data.x.unit = "sec"
-            self.data.y[0].set(title="Volume cumulé", unit="ml", show=True)
-            self.data.y[1].set(title="Débit instantané", unit="ml/h", show=True)
-            self.data.y[2].set(title="Debit moyen", unit="ml/h", show=False)
-            self.data.y[3].set(title="Pression", unit="mmHg", show=False)
+            self.data.y[0].set(title="Cumulated volume", unit="ml", show=True)
+            self.data.y[1].set(title="Instant flow", unit="ml/h", show=True)
+            self.data.y[2].set(title="Mean flow", unit="ml/h", show=False)
+            self.data.y[3].set(title="Pressure", unit="mmHg", show=False)
 
             for line in fid:
                 line = line.rstrip().split(",")
