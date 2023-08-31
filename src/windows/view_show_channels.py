@@ -50,10 +50,8 @@ class ViewShowChannels(QDialog):
 
         self.ui = ViewShowChannelsUI(self, data)
         for i, button in enumerate(self.ui.buttons):
-            print(f"for i={i}")
-            func = lambda index=1: self._on_btn_color_select_clicked_for(index)
-            button.clicked.connect(func)
-            button.setStyleSheet(f"background-color: {colors.RED.hex};")
+            button.clicked.connect(self._on_btn_color_select_clicked)
+            button.setStyleSheet(f"background-color: {self.data.y[i].color.hex};")
         self.ui.btn_validate.clicked.connect(self._on_btn_validate_clicked)
         self.ui.btn_cancel.clicked.connect(self._on_btn_cancel_clicked)
 
@@ -70,16 +68,16 @@ class ViewShowChannels(QDialog):
         self._changed = False
         self.close()
 
-    def _on_btn_color_select_clicked_for(self, index:int):
-        print("This is index", index)
+    def _on_btn_color_select_clicked(self):
+        index = self.ui.buttons.index(self.sender())
         dialog = QColorDialog()
         dialog.setCurrentColor(QColor(*self.data.y[index].color.rgb_int))
         dialog.exec()
         color = dialog.selectedColor()
         if color.isValid():
-            print(index)
-            color = color.toTuple()
-            self.data.y[index].set(color=colors.from_rgba_int(color))
+            color = colors.from_rgba_int(color.toTuple())
+            self.data.y[index].set(color=color)
+            self.ui.buttons[index].setStyleSheet(f"background-color: {color.hex}")
 
     # Methods
 

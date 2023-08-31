@@ -13,7 +13,7 @@ class DataColumn:
         self.title = str()
         self.unit = str()
         self.show = True
-        self.color = None
+        self.color = next(colors.sample)
 
     def __str__(self):
         n = len(self._values)

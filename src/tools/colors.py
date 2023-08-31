@@ -1,3 +1,6 @@
+import itertools
+
+
 class Color:
     """
     A color is a tuple with R, G, B from [0.0 - 1.0].
@@ -90,6 +93,7 @@ class Color:
         return f"{self.__to_int(value):02x}"
 
 
+
 def new(rgb:tuple=(1.0, 1.0, 1.0), alpha:float=1, max_int_byte=1):
     return Color(rgb, alpha, max_int_byte)
 
@@ -110,6 +114,14 @@ PURPLE = Color((1, 0, 1))
 CYAN = Color((0, 1, 1))
 
 
+sample = itertools.cycle([
+    RED,
+    GREEN,
+    BLUE,
+    YELLOW,
+    PURPLE,
+    CYAN,
+])
 
 if __name__ == '__main__':
     color = Color((1.0, 0.75, 0.5))
