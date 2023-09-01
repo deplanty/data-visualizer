@@ -3,7 +3,6 @@ import glob
 import os
 
 from .data_container import DataContainer
-from .enums import FileType
 
 
 class BaseLoader(abc.ABC):
@@ -51,5 +50,5 @@ class DataLoader:
         return loader.load(filename)
 
     @classmethod
-    def list_all_file_type(self):
+    def list_all_file_type(cls):
         return [loader.file_type for loader in cls.loaders]

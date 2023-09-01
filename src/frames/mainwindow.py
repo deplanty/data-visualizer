@@ -1,7 +1,7 @@
 import numpy as np
 from PySide6 import QtWidgets
 
-from src.objects.enums import FileType, AnalyseType
+from src.objects.enums import AnalyseType
 from src.objects import DataLoader, DataContainer
 from src.windows import ViewShowChannels
 
@@ -23,7 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
             row["measure"].activated.connect(self.on_combobox_changed)
             row["channel"].activated.connect(self.on_combobox_changed)
 
-        self.load_from_file("test/dummy.csv", FileType.CSV_RigelMultiflo)
+        self.load_from_file("test/dummy.csv", "CSV from Rigel Multiflo (*.csv)")
 
     # Events
 
