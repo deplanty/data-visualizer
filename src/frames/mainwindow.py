@@ -75,7 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
     # Methods
 
     def load_from_file(self, filename:str, file_type:str):
-        self.data = self.dataloader.load_from_file(filename, file_type)
+        self.data = self.dataloader.load(filename, file_type)
         self.ui.mpl_canvas.draw_data(self.data)
         self.ui.set_channels(len(self.data))
 

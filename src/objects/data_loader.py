@@ -1,71 +1,50 @@
+import abc
+import glob
+import os
+
 from .data_container import DataContainer
 from .enums import FileType
 
 
-class DataLoader:
-    def __init__(self):
-        self.data = DataContainer()
-
-    def load_from_file(self, filename:str, file_type:str):
-        if file_type == FileType.CSV_RigelMultiflo:
-            self.__load_CSV_RigelMultiflo(filename)
-
-        return self.data
-
-    def __load_CSV_RigelMultiflo(self, filename:str):
-        with open(filename, "r") as fid:
-            # 1 (x) + 4 (y) columns of data
-            self.data.init(size=4)
-
-            # 14 lines of useless header
-            for _ in range(14): fid.readline()
-            # Add metadata
-            self.data.x.title = "Time"
-            self.data.x.unit = "sec"
-            self.data.y[0].set(title="Cumulated volume", unit="ml", show=True)
-            self.data.y[1].set(title="Instant flow", unit="ml/h", show=True)
-            self.data.y[2].set(title="Mean flow", unit="ml/h", show=False)
-            self.data.y[3].set(title="Pressure", unit="mmHg", show=False)
-
-            for line in fid:
-                line = line.rstrip().split(",")
-                # End when empty table line
-                if line[0] == "":
-                    break
-                # Add the 5 columns in data
-                self.data.add_row(line[:5], x_index=0)
-
-
-class LoaderDefault:
+class BaseLoader(abc.ABC):
     file_ext: list[str]
     file_desc: str
 
-    def load(self):
-        ...
-
-    @property
-    def file_type(self):
-        return self.file_desc + " (*." + ", *.".join(self.file_ext) + ")"
-
-
-
-class DataContainerLoader:
     def __init__(self):
-        import glob
-        import os
+        self.data = DataContainer()
 
-        loaders = glob.glob(os.path.join(os.path.dirname(__file__), "loaders", "*.py"))
-        for pyfile in loaders:
+    @staticmethod
+    @abc.abstractmethod
+    def load(filename:str) -> DataContainer:
+        pass
+
+    @classmethod
+    @property
+    def file_type(cls):
+        return cls.file_desc + " (*." + ", *.".join(cls.file_ext) + ")"
+
+
+
+class DataLoader:
+    def __init__(self):
+        # Get all the loaders as python files
+        pyloaders = glob.glob(os.path.join("src", "objects", "loaders", "*.py"))
+        for pyfile in pyloaders:
             data = DataContainer()
             with open(pyfile) as fid:
-                exec(fid.read(), None, dict(filename="test/dummy.csv", data=data))
+                exec(fid.read())
 
-        subclasses = LoaderDefault.__subclasses__()
-        print(subclasses)
-        subc = list()
-        for c in subclasses:
-            subc.append(c())
-        print(subc[0].file_type)
+        # Get the loaders as classes
+        self.loaders = LoaderDefault.__subclasses__()
 
+    def load(self, filename:str, file_type:str) -> DataContainer:
+        for loader in self.loaders:
+            if loader.file_type == file_type:
+                break
+        else:
+            return None
 
-loaders = DataContainerLoader()
+        return loader.load(filename)
+
+    def list_all_file_type(self):
+        return [loader.file_type for loader in self.loaders]
