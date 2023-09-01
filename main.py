@@ -5,6 +5,7 @@ import sys
 
 from PySide6 import QtWidgets
 
+import src.preload as pl
 from src.frames import MainWindow
 
 

@@ -13,7 +13,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
 
         self.data = DataContainer()
-        self.dataloader = DataLoader()
 
         self.ui = MainWindowUI(self)
         self.ui.menu_file_open.triggered.connect(self._on_menu_file_open_triggered)
@@ -33,7 +32,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _on_menu_file_open_triggered(self):
         valid_files = ";;".join([
-            *self.dataloader.list_all_file_type(),
+            *DataLoader.list_all_file_type(),
             "All Files (*.*)",
         ])
         filename, file_type = QtWidgets.QFileDialog.getOpenFileName(self, "Open a file", "", valid_files)
@@ -75,7 +74,7 @@ class MainWindow(QtWidgets.QMainWindow):
     # Methods
 
     def load_from_file(self, filename:str, file_type:str):
-        self.data = self.dataloader.load(filename, file_type)
+        self.data = DataLoader.load(filename, file_type)
         self.ui.mpl_canvas.draw_data(self.data)
         self.ui.set_channels(len(self.data))
 

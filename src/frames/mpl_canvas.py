@@ -9,8 +9,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationTool
 from matplotlib.figure import Figure
 from matplotlib.widgets import SpanSelector
 
-from src.objects import DataContainer
-from src.tools import colors
+from src.objects import DataContainer, colors
 
 mpl.rc("lines", linewidth=0.5)
 

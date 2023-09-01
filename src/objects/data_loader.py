@@ -26,7 +26,10 @@ class BaseLoader(abc.ABC):
 
 
 class DataLoader:
-    def __init__(self):
+    loaders: list[BaseLoader]
+
+    @classmethod
+    def init(cls):
         # Get all the loaders as python files
         pyloaders = glob.glob(os.path.join("src", "objects", "loaders", "*.py"))
         for pyfile in pyloaders:
@@ -35,10 +38,11 @@ class DataLoader:
                 exec(fid.read())
 
         # Get the loaders as classes
-        self.loaders = BaseLoader.__subclasses__()
+        cls.loaders = BaseLoader.__subclasses__()
 
-    def load(self, filename:str, file_type:str) -> DataContainer:
-        for loader in self.loaders:
+    @classmethod
+    def load(cls, filename:str, file_type:str) -> DataContainer:
+        for loader in cls.loaders:
             if loader.file_type == file_type:
                 break
         else:
@@ -46,5 +50,6 @@ class DataLoader:
 
         return loader.load(filename)
 
+    @classmethod
     def list_all_file_type(self):
-        return [loader.file_type for loader in self.loaders]
+        return [loader.file_type for loader in cls.loaders]

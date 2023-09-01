@@ -1,4 +1,4 @@
-from src.tools import colors
+from src.objects import colors
 
 
 class DataColumn:
