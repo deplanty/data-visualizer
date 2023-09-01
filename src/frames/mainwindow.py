@@ -23,7 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
             row["measure"].activated.connect(self.on_combobox_changed)
             row["channel"].activated.connect(self.on_combobox_changed)
 
-        self.load_from_file("test/dummy.csv", "CSV from Rigel Multiflo (*.csv)")
+        self.load_from_file("test/rigel_multiflo.csv", "CSV from Rigel Multiflo (*.csv)")
 
     # Events
 

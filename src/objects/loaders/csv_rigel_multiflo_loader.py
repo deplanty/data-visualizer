@@ -14,8 +14,7 @@ class CsvRigelMultifloLoader(BaseLoader):
             # 14 lines of useless header
             for _ in range(14): fid.readline()
             # Add metadata
-            data.x.title = "Time"
-            data.x.unit = "sec"
+            data.x.set(title = "Time", unit = "sec")
             data.y[0].set(title="Cumulated volume", unit="ml", show=True)
             data.y[1].set(title="Instant flow", unit="ml/h", show=True)
             data.y[2].set(title="Mean flow", unit="ml/h", show=False)
