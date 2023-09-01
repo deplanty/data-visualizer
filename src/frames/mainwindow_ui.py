@@ -55,7 +55,7 @@ class MainWindowUI():
             self.layout_grid.addWidget(combo_channel, i, 1)
             # Result of the measure
             label = QtWidgets.QLabel()
-            label.setFixedWidth(50)
+            label.setFixedWidth(60)
             self.layout_grid.addWidget(label, i, 2)
             self.grid.append({
                 "measure": combo_measure,

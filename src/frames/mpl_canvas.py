@@ -69,6 +69,7 @@ class MplCanvas(FigureCanvasQTAgg):
                 data.get_x_data(),
                 channel.values,
                 color=channel.color.rgb,
+                linewidth=0.75,
             )
             ax.set_ylabel(channel.label)
             ax.grid(which="major", linestyle="dashed", linewidth=0.5)

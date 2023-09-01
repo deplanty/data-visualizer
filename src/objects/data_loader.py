@@ -35,7 +35,7 @@ class DataLoader:
                 exec(fid.read())
 
         # Get the loaders as classes
-        self.loaders = LoaderDefault.__subclasses__()
+        self.loaders = BaseLoader.__subclasses__()
 
     def load(self, filename:str, file_type:str) -> DataContainer:
         for loader in self.loaders:

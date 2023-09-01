@@ -33,7 +33,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _on_menu_file_open_triggered(self):
         valid_files = ";;".join([
-            "CSV from Rigel Multoflo (*.csv)",
+            *self.dataloader.list_all_file_type(),
             "All Files (*.*)",
         ])
         filename, file_type = QtWidgets.QFileDialog.getOpenFileName(self, "Open a file", "", valid_files)

@@ -11,9 +11,12 @@ class Color:
         self._rgb = rgb
         self._alpha = alpha
         self._max_int_byte = max_int_byte
-        self._max_int_value = 2**(8 * self._max_int_byte) - 1
 
     # Properties
+
+    @property
+    def max_int_value(self):
+        return 2**(8 * self._max_int_byte) - 1
 
     @property
     def r(self):
@@ -21,7 +24,7 @@ class Color:
 
     @property
     def r_int(self):
-        return self.__to_int(self.r)
+        return self.__float_to_int(self.r)
 
     @property
     def g(self):
@@ -29,7 +32,7 @@ class Color:
 
     @property
     def g_int(self):
-        return self.__to_int(self.g)
+        return self.__float_to_int(self.g)
 
     @property
     def b(self):
@@ -37,7 +40,7 @@ class Color:
 
     @property
     def b_int(self):
-        return self.__to_int(self.b)
+        return self.__float_to_int(self.b)
 
     @property
     def a(self):
@@ -45,7 +48,7 @@ class Color:
 
     @property
     def a_int(self):
-        return self.__to_int(self.a)
+        return self.__float_to_int(self.a)
 
     @property
     def rgb(self):
@@ -65,32 +68,68 @@ class Color:
 
     @property
     def hex(self) -> str:
-        return "#" + "".join(self.__to_hex(x) for x in (self.r, self.g, self.b))
+        return "#" + "".join(self.__float_to_hex(x) for x in (self.r, self.g, self.b))
 
     @property
     def ahex(self) -> str:
-        return "#" + "".join(self.__to_hex(x) for x in (self.a, self.r, self.g, self.b))
+        return "#" + "".join(self.__float_to_hex(x) for x in (self.a, self.r, self.g, self.b))
 
     @property
     def hexa(self) -> str:
-        return "#" + "".join(self.__to_hex(x) for x in (self.r, self.g, self.b, self.a))
+        return "#" + "".join(self.__float_to_hex(x) for x in (self.r, self.g, self.b, self.a))
 
     # Methods
 
     def from_int(self, rgb:tuple[int]=(255, 255, 255), alpha:int=255):
-        self._rgb = tuple(self.__to_float(x) for x in rgb)
-        self._alpha = self.__to_float(alpha)
+        self._rgb = tuple(self.__int_to_float(x) for x in rgb)
+        self._alpha = self.__int_to_float(alpha)
 
     # Tools
 
-    def __to_int(self, value:float) -> int:
-        return int(value * self._max_int_value)
+    def __from_ahex(self, ahex:str="#ffffffff"):
+        if ahex.startswith("#"):
+            ahex = ahex[1:]
+        # Suppose max_int_byte == 1
+        a = self.__hex_to_float(ahex[:2])
+        r = self.__hex_to_float(ahex[2:4])
+        g = self.__hex_to_float(ahex[4:6])
+        b = self.__hex_to_float(ahex[6:8])
+        self._rgb = (r, g, b)
+        self._alpha = a
 
-    def __to_float(self, value:int) -> float:
-        return value / self._max_int_value
+    def __from_hex(self, hex:str="#ffffff"):
+        if hex.startswith("#"):
+            hex = hex[1:]
+        # Suppose max_int_byte == 1
+        r = self.__hex_to_float(hex[:2])
+        g = self.__hex_to_float(hex[2:4])
+        b = self.__hex_to_float(hex[4:6])
+        self._rgb = (r, g, b)
+        self._alpha = 1.0
 
-    def __to_hex(self, value:float) -> str:
-        return f"{self.__to_int(value):02x}"
+    def __float_to_int(self, value:float) -> int:
+        return int(value * self.max_int_value)
+
+    def __int_to_float(self, value:int) -> float:
+        return value / self.max_int_value
+
+    def __float_to_hex(self, value:float) -> str:
+        return f"{self.__float_to_int(value):02x}"
+
+    def __hex_to_float(self, value:str) -> float:
+        return self.__int_to_float(int(value, 16))
+
+    @classmethod
+    def from_hex(cls, hex:str="#ffffff"):
+        color = cls()
+        color.__from_hex(hex)
+        return color
+
+    @classmethod
+    def from_ahex(cls, ahex:str="#ffffffff"):
+        color = cls()
+        color.__from_ahex(ahex)
+        return color
 
 
 
@@ -105,6 +144,14 @@ def from_rgba_int(rgba:tuple[int]=(255, 255, 255, 255), max_int_byte=1):
     return color
 
 
+def from_ahex(ahex:str="#ffffffff"):
+    return Color.from_ahex(ahex)
+
+
+def from_hex(hex:str="#ffffff"):
+    return Color.from_hex(hex)
+
+
 
 RED = Color((1, 0, 0))
 GREEN = Color((0, 1, 0))
@@ -113,15 +160,29 @@ YELLOW = Color((1, 1, 0))
 PURPLE = Color((1, 0, 1))
 CYAN = Color((0, 1, 1))
 
+GRAPEFRUIT = Color.from_hex("#da4453")
+BITTERSWEET = Color.from_hex("#e9573f")
+SUNFLOWER = Color.from_hex("#f6bb42")
+GRASS = Color.from_hex("#8cc152")
+MINT = Color.from_hex("#37bc9b")
+AQUA = Color.from_hex("#3bafda")
+BLUE_JEANS = Color.from_hex("#4a89dc")
+LAVENDER = Color.from_hex("#967adc")
+PINK_ROSE = Color.from_hex("#d770ad")
+
 
 sample = itertools.cycle([
-    RED,
-    GREEN,
-    BLUE,
-    YELLOW,
-    PURPLE,
-    CYAN,
+    GRAPEFRUIT,
+    SUNFLOWER,
+    GRASS,
+    BLUE_JEANS,
+    LAVENDER,
+    BITTERSWEET,
+    MINT,
+    PINK_ROSE,
+    AQUA,
 ])
+
 
 if __name__ == '__main__':
     color = Color((1.0, 0.75, 0.5))
