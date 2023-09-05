@@ -2,7 +2,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
-from src.objects.enums import AnalyseType
+from src.objects import DataAnalyzer
 
 from .mpl_canvas import MplCanvas
 
@@ -78,7 +78,7 @@ class MainWindowUI():
         # Add the parameters in the comboboxes
         for row in self.grid:
             c = row["measure"]
-            for name in AnalyseType.list_all():
+            for name in DataAnalyzer.list_all():
                 c.addItem(name)
 
             c = row["channel"]

@@ -1,8 +1,7 @@
 import numpy as np
 from PySide6 import QtWidgets
 
-from src.objects.enums import AnalyseType
-from src.objects import DataLoader, DataContainer
+from src.objects import DataLoader, DataContainer, DataAnalyzer
 from src.windows import ViewShowChannels
 
 from .mainwindow_ui import MainWindowUI
@@ -96,19 +95,11 @@ class MainWindow(QtWidgets.QMainWindow):
         region_x = x[i_min:i_max]
         for row in self.ui.grid:
             measure = row["measure"].currentText()
+            if measure == "None":
+                continue
+
             channel = int(row["channel"].currentText()) - 1
             region_y = self.data.get_y_data(channel, (i_min, i_max))
-            value = 0.0
-            if measure == AnalyseType.Minimum:
-                value = np.min(region_y)
-            elif measure == AnalyseType.Maximum:
-                value = np.max(region_y)
-            elif measure == AnalyseType.Mean:
-                value = np.mean(region_y)
-            elif measure == AnalyseType.DeltaT:
-                value = np.max(region_x) - np.min(region_x)
-            elif measure == AnalyseType.PeakPeak:
-                value = np.max(region_y) - np.min(region_y)
-            elif measure == AnalyseType.Integrate:
-                value = np.trapz(region_y, x=region_x)
+
+            value = DataAnalyzer.process(measure, region_x, region_y)
             row["label"].setText(f"{value:0.5f}")
