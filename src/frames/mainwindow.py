@@ -1,7 +1,7 @@
 import numpy as np
 from PySide6 import QtWidgets
 
-from src.objects import DataLoader, DataContainer, DataAnalyzer
+from src.objects import DataLoader, DataContainer, DataAnalyzer, ScriptsLoader
 from src.windows import ViewShowChannels
 
 from .mainwindow_ui import MainWindowUI
@@ -17,6 +17,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.menu_file_open.triggered.connect(self._on_menu_file_open_triggered)
         self.ui.menu_file_exit.triggered.connect(self._on_menu_file_exit_triggered)
         self.ui.menu_view_show_channels.triggered.connect(self._on_menu_view_show_channels)
+        for name, script in ScriptsLoader.list_all():
+            self.ui.add_script_menu(name, script)
         self.ui.mpl_canvas.signal_selection_changed.connect(self._on_selection_changed)
         for row in self.ui.grid:
             row["measure"].activated.connect(self.on_combobox_changed)

@@ -9,3 +9,6 @@ DataLoader.init()
 # Initialize the data analyzer
 from src.objects import DataAnalyzer
 DataAnalyzer.init()
+
+from src.objects import ScriptsLoader
+ScriptsLoader.init()

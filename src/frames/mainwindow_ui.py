@@ -16,6 +16,7 @@ class MainWindowUI():
 
         # Top menu
         menubar = self.master.menuBar()
+        # File
         menu_file = menubar.addMenu("File")
         self.menu_file_open = QAction("Open...")
         self.menu_file_open.setShortcut("Ctrl+o")
@@ -29,10 +30,13 @@ class MainWindowUI():
         self.menu_file_exit = QAction("Quit")
         self.menu_file_exit.setShortcut("Ctrl+q")
         menu_file.addAction(self.menu_file_exit)
-
+        # View
         menu_view = menubar.addMenu("View")
         self.menu_view_show_channels = QAction("Channels settings...")
         menu_view.addAction(self.menu_view_show_channels)
+        # Scripts
+        self.menu_scripts = menubar.addMenu("Scripts")
+        self.menu_scripts_list = list()
 
         # Main widget
         frame = QtWidgets.QWidget()
@@ -89,3 +93,9 @@ class MainWindowUI():
             c = row["channel"]
             c.clear()
             c.addItems(str(i + 1) for i in range(n_channels))
+
+    def add_script_menu(self, name:str, func):
+        menu = QAction(name)
+        self.menu_scripts.addAction(menu)
+        menu.triggered.connect(func)
+        self.menu_scripts_list.append(menu)
