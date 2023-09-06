@@ -2,15 +2,13 @@ import abc
 import glob
 import os
 
-from .data_container import DataContainer
-
 
 class BaseScript(abc.ABC):
     name: str
 
     @staticmethod
     @abc.abstractmethod
-    def process(data:DataContainer, cursor):
+    def process(data, cursor):
         pass
 
 
@@ -29,7 +27,7 @@ class ScriptsLoader:
         cls.scripts = BaseScript.__subclasses__()
 
     @classmethod
-    def process(cls, script_name:str, data:DataContainer, cursor) -> float:
+    def process(cls, script_name:str, data, cursor) -> float:
         for script in cls.scripts:
             if script.name == script_name:
                 break
@@ -40,4 +38,4 @@ class ScriptsLoader:
 
     @classmethod
     def list_all(cls) -> list:
-        return [(script.name, script.process) for script in cls.scripts]
+        return [script.name for script in cls.scripts]

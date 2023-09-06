@@ -94,8 +94,8 @@ class MainWindowUI():
             c.clear()
             c.addItems(str(i + 1) for i in range(n_channels))
 
-    def add_script_menu(self, name:str, func):
+    def add_script_menu(self, name:str):
         menu = QAction(name)
         self.menu_scripts.addAction(menu)
-        menu.triggered.connect(func)
         self.menu_scripts_list.append(menu)
+        return menu

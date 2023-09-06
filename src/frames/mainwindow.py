@@ -1,7 +1,7 @@
 import numpy as np
 from PySide6 import QtWidgets
 
-from src.objects import DataLoader, DataContainer, DataAnalyzer, ScriptsLoader
+from src.objects import Cursor, DataLoader, DataContainer, DataAnalyzer, ScriptsLoader
 from src.windows import ViewShowChannels
 
 from .mainwindow_ui import MainWindowUI
@@ -12,13 +12,16 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
 
         self.data = DataContainer()
+        self.cursor = Cursor()
+        self.cursor.changed.connect(self._on_cursor_changed)
 
         self.ui = MainWindowUI(self)
         self.ui.menu_file_open.triggered.connect(self._on_menu_file_open_triggered)
         self.ui.menu_file_exit.triggered.connect(self._on_menu_file_exit_triggered)
-        self.ui.menu_view_show_channels.triggered.connect(self._on_menu_view_show_channels)
-        for name, script in ScriptsLoader.list_all():
-            self.ui.add_script_menu(name, script)
+        self.ui.menu_view_show_channels.triggered.connect(self._on_menu_view_show_channels_triggered)
+        for name in ScriptsLoader.list_all():
+            menu = self.ui.add_script_menu(name)
+            menu.triggered.connect(self._on_menu_scripts_triggered)
         self.ui.mpl_canvas.signal_selection_changed.connect(self._on_selection_changed)
         for row in self.ui.grid:
             row["measure"].activated.connect(self.on_combobox_changed)
@@ -42,12 +45,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.load_from_file(filename, file_type)
 
-    def _on_menu_view_show_channels(self):
+    def _on_menu_view_show_channels_triggered(self):
         dialog = ViewShowChannels(self.data)
         dialog.exec()
         if dialog.has_changed():
             # Redraw to show only selected channels
             self.ui.mpl_canvas.draw_data(self.data)
+
+    def _on_menu_scripts_triggered(self):
+        action = self.sender()
+        ScriptsLoader.process(action.text(), self.data, self.cursor)
 
     def _on_selection_changed(self, xmin:float, xmax:float):
         """
@@ -58,15 +65,18 @@ class MainWindow(QtWidgets.QMainWindow):
             xmax (float): maximum x value.
         """
         # Check if the selection is set or not
-        if xmin == xmax:
-            for span in self.ui.mpl_canvas.spans:
-                span.extents = (0, 0)
-                span.set_visible(False)
-        else:
-            for span in self.ui.mpl_canvas.spans:
-                span.extents = (xmin, xmax)
-                span.set_visible(True)
-                self.process_measures(xmin, xmax)
+
+        for span in self.ui.mpl_canvas.spans:
+            span.extents = (xmin, xmax)
+            span.set_visible(True)
+
+        self.cursor.set(xmin, xmax)
+        self.process_measures(xmin, xmax)
+
+    def _on_cursor_changed(self, xmin, xmax):
+        for span in self.ui.mpl_canvas.spans:
+            span.extents = (xmin, xmax)
+            span.set_visible(True)
 
     def on_combobox_changed(self):
         xmin, xmax = self.ui.mpl_canvas.get_selection()

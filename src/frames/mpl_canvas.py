@@ -74,6 +74,7 @@ class MplCanvas(FigureCanvasQTAgg):
             ax.grid(which="major", linestyle="dashed", linewidth=0.5)
             span = SpanSelector(
                 ax=ax,
+                minspan=-1,
                 onselect=self._on_selection_changed,
                 direction="horizontal",
                 useblit=True,
