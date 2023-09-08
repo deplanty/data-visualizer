@@ -24,6 +24,8 @@ class MainWindowUI():
         # self.menu_file_save = QAction("Save", self.master)
         # self.menu_file_save.setShortcut("Ctrl+s")
         # menu_file.addAction(self.menu_file_save)
+        self.menu_file_saveselectionas = QAction("Save selection as...", self.master)
+        menu_file.addAction(self.menu_file_saveselectionas)
         # self.menu_file_saveas = QAction("Save as...", self.master)
         # self.menu_file_saveas.setShortcut("Ctrl+Shift+s")
         # menu_file.addAction(self.menu_file_saveas)

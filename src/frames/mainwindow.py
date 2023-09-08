@@ -17,6 +17,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.ui = MainWindowUI(self)
         self.ui.menu_file_open.triggered.connect(self._on_menu_file_open_triggered)
+        self.ui.menu_file_saveselectionas.triggered.connect(self._on_menu_file_saveselectionas_triggered)
         self.ui.menu_file_exit.triggered.connect(self._on_menu_file_exit_triggered)
         self.ui.menu_view_show_channels.triggered.connect(self._on_menu_view_show_channels_triggered)
         for name in ScriptsLoader.list_all():
@@ -44,6 +45,11 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         self.load_from_file(filename, file_type)
+
+    def _on_menu_file_saveselectionas_triggered(self):
+        filename = "test/export.csv"
+        data = self.data.from_cursor(self.cursor)
+        self.save_to_file(data, filename)
 
     def _on_menu_view_show_channels_triggered(self):
         dialog = ViewShowChannels(self.data)
@@ -88,6 +94,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data = DataLoader.load(filename, file_type)
         self.ui.mpl_canvas.draw_data(self.data)
         self.ui.set_channels(len(self.data))
+
+    def save_to_file(self, data:DataContainer, filename:str):
+        with open(filename, "w") as fid:
+            header = [data.x.label]
+            header.extend([y.label for y in data.y])
+            print(*header, sep=",", file=fid)
+            for row in data.iter_rows():
+                print(*row, sep=",", file=fid)
 
     def process_measures(self, xmin:float, xmax:float):
         # Process the selection

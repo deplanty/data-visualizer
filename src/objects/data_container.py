@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.objects import colors
 
 
@@ -143,16 +145,42 @@ class DataContainer:
         else:
             return len(self._y)
 
+    def from_cursor(self, cursor):
+        """
+        Return a DataContainer with only the selected values
+        """
 
+        i_min, i_max = np.searchsorted(self.x.values, cursor.get())
+        i_max = min(len(self.x) - 1, i_max)
+        if i_min > i_max:
+            i_min, i_max = i_max, i_min
+        # Allow to take the last value
+        if cursor.end > np.max(self.x.values):
+            i_max += 1
 
-if __name__ == '__main__':
-    data = DataContainer()
-    data.init(4)
-    data.add_row([1, 2, 3, 4, 5])
-    data.x.title = "Time"
-    data.x.unit = "sec"
-    print(data.x)
-    print(data.y[0])
-    print(data.y[1])
+        data = DataContainer()
+        data.init(sum(1 for y in self.y if y.show))
 
+        data.x.set(
+            values=self.x.values[i_min:i_max],
+            title=self.x.title,
+            unit=self.x.unit,
+            color=self.x.color
+        )
+
+        for i, y in enumerate([y for y in self.y if y.show]):
+            data.y[i].set(
+                values=y.values[i_min:i_max],
+                title=y.title,
+                unit=y.unit,
+                color=y.color
+            )
+
+        return data
+
+    def iter_rows(self):
+        for i in range(len(self.x)):
+            row = [self.x.values[i]]
+            row.extend([y.values[i] for y in self.y])
+            yield row
 
