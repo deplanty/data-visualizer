@@ -5,6 +5,13 @@ class NoneAnalyzer(BaseAnalyzer):
         return None
 
 
+class ValueAnalyzer(BaseAnalyzer):
+    description = "Value"
+
+    def process(region_x:list, region_y:list) -> float:
+        return region_y[-1]
+
+
 class MinimumAnalyzer(BaseAnalyzer):
     description = "Minimum"
 

@@ -112,6 +112,11 @@ class DataContainer:
     def get_y_data(self, index:int, slice_:tuple=None) -> list:
         if slice_ is None:
             return self._y[index].values
+        elif len(slice_) == 2 and slice_[0] == slice_[1]:
+            if slice_[0] - 1 < 0:
+                return [self._y[index].values[0]]
+            else:
+                return [self._y[index].values[slice_[0] - 1]]
         else:
             return self._y[index].values[slice(*slice_)]
 

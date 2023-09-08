@@ -95,8 +95,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         i_min, i_max = np.searchsorted(x, (xmin, xmax))
         i_max = min(len(x) - 1, i_max)
-        if i_min == i_max:
-            return
         if i_min > i_max:
             i_min, i_max = i_max, i_min
 
