@@ -69,6 +69,8 @@ class DataColumn:
             values (list): clear current values and replace with new. If None, do nothing.
             title (str): the new title. If None, do nothing.
             unit (str): the new unit. If None, do nothing.
+            show (bool): the data is shown.
+            color: (tuple): the color of the curve.
         """
 
         if values is not None:
@@ -183,4 +185,3 @@ class DataContainer:
             row = [self.x.values[i]]
             row.extend([y.values[i] for y in self.y])
             yield row
-
