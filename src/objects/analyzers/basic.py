@@ -57,4 +57,4 @@ class IntegrateAnalyzer(BaseAnalyzer):
 
     def process(region_x:list, region_y:list) -> float:
         import numpy as np
-        return np.trapz(region_y, x=region_x)
+        return np.trapezoid(region_y, x=region_x)
