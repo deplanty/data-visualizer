@@ -1,8 +1,13 @@
+from src.objects.data_container import DataContainer
+from src.objects.data_loader import BaseLoader
+
+
 class CsvCommaLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV comma separated values"
-    
-    def load(filename:str) -> DataContainer:
+
+    @staticmethod
+    def load(filename: str) -> DataContainer:
         sep = ","
         data = DataContainer()
         with open(filename, "r") as fid:
@@ -12,7 +17,8 @@ class CsvCommaLoader(BaseLoader):
 
             for line in fid:
                 line = line.rstrip().split(sep)
-                data.add_row(line)
+                values = [float(v) for v in line]
+                data.add_row(values)
 
             data.x.set(title=header.pop(0))
             for i in range(channels):
@@ -25,7 +31,8 @@ class CsvTabLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV tab separated values"
 
-    def load(filename:str) -> DataContainer:
+    @staticmethod
+    def load(filename: str) -> DataContainer:
         sep = "\t"
         data = DataContainer()
         with open(filename, "r") as fid:
@@ -35,7 +42,8 @@ class CsvTabLoader(BaseLoader):
 
             for line in fid:
                 line = line.rstrip().split(sep)
-                data.add_row(line)
+                values = [float(v) for v in line]
+                data.add_row(values)
 
             data.x.set(title=header.pop(0))
             for i in range(channels):
@@ -48,7 +56,8 @@ class CsvSemicolonLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV semicolon separated values"
 
-    def load(filename:str) -> DataContainer:
+    @staticmethod
+    def load(filename: str) -> DataContainer:
         sep = ";"
         data = DataContainer()
         with open(filename, "r") as fid:
@@ -58,7 +67,8 @@ class CsvSemicolonLoader(BaseLoader):
 
             for line in fid:
                 line = line.rstrip().split(sep)
-                data.add_row(line)
+                values = [float(v) for v in line]
+                data.add_row(values)
 
             data.x.set(title=header.pop(0))
             for i in range(channels):

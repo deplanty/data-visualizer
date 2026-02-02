@@ -1,6 +1,5 @@
 import abc
-import glob
-import os
+import importlib
 
 from .data_container import DataContainer
 
@@ -14,35 +13,31 @@ class BaseLoader(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def load(filename:str) -> DataContainer:
+    def load(filename: str) -> DataContainer:
         pass
 
     @classmethod
-    @property
-    def file_type(cls):
+    def get_file_type(cls):
         return cls.file_desc + " (*." + ", *.".join(cls.file_ext) + ")"
 
 
-
 class DataLoader:
-    loaders: list[BaseLoader]
+    loaders: list[type[BaseLoader]]
 
     @classmethod
     def init(cls):
-        # Get all the loaders as python files
-        pyloaders = glob.glob(os.path.join("src", "objects", "loaders", "*.py"))
-        for pyfile in pyloaders:
-            data = DataContainer()
-            with open(pyfile) as fid:
-                exec(fid.read())
+        # Import the loaders in the memory
+        importlib.import_module("src.objects.loaders")
 
         # Get the loaders as classes
         cls.loaders = BaseLoader.__subclasses__()
 
     @classmethod
-    def load(cls, filename:str, file_type:str) -> DataContainer:
+    def load(cls, filename: str, file_type: str) -> DataContainer | None:
+        """Use the correct loader to read `filename` with the type `file_type`."""
+
         for loader in cls.loaders:
-            if loader.file_type == file_type:
+            if loader.get_file_type() == file_type:
                 break
         else:
             return None
@@ -51,4 +46,4 @@ class DataLoader:
 
     @classmethod
     def list_all_file_type(cls):
-        return [loader.file_type for loader in cls.loaders]
+        return [loader.get_file_type() for loader in cls.loaders]

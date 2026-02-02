@@ -1,13 +1,19 @@
+from src.objects.data_container import DataContainer
+from src.objects.data_loader import BaseLoader
+
+
 class Asl5000Loader(BaseLoader):
     file_ext = ["rwb"]
     file_desc = "ASL5000 raw binary data"
 
-    def load(filename:str) -> DataContainer:
+    @staticmethod
+    def load(filename: str) -> DataContainer:
         data = DataContainer()
-        data.init(12)
+        data.init(channels=12)
 
         import asl5000_utils as asl
-        labels, array = asl.read_rwb(filename)
+
+        _labels, array = asl.read_rwb(filename)
         data.x.set(values=array.pop(0), title="Time", unit="sec")
         for i in range(12):
             data.y[i].set(values=array[i])

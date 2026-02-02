@@ -61,7 +61,14 @@ class DataColumn:
         self.title = ""
         self.unit = ""
 
-    def set(self, values:list=None, title:str=None, unit:str=None, show:bool=None, color:tuple=None):
+    def set(
+        self,
+        values: list = None,
+        title: str = None,
+        unit: str = None,
+        show: bool = None,
+        color: tuple = None,
+    ):
         """
         Set the values for the parameters.
 
@@ -113,7 +120,7 @@ class DataContainer:
     def get_x_data(self) -> list:
         return self._x.values
 
-    def get_y_data(self, index:int, slice_:tuple=None) -> list:
+    def get_y_data(self, index: int, slice_: tuple = None) -> list:
         if slice_ is None:
             return self._y[index].values
         elif len(slice_) == 2 and slice_[0] == slice_[1]:
@@ -126,11 +133,18 @@ class DataContainer:
 
     # Methods
 
-    def init(self, size:int):
-        self._x.init()
-        self._y = [DataColumn() for _ in range(size)]
+    def init(self, channels: int):
+        """
+        Initialize the data with the number of channels it contains
 
-    def add_row(self, values:list[float], x_index:int=0):
+        :param channels: The number of channels.
+        :type channels: int
+        """
+
+        self._x.init()
+        self._y = [DataColumn() for _ in range(channels)]
+
+    def add_row(self, values: list[float], x_index: int = 0):
         self._x.values.append(float(values.pop(x_index)))
 
         if len(values) < len(self._y):
@@ -167,16 +181,11 @@ class DataContainer:
             values=self.x.values[i_min:i_max],
             title=self.x.title,
             unit=self.x.unit,
-            color=self.x.color
+            color=self.x.color,
         )
 
         for i, y in enumerate([y for y in self.y if y.show]):
-            data.y[i].set(
-                values=y.values[i_min:i_max],
-                title=y.title,
-                unit=y.unit,
-                color=y.color
-            )
+            data.y[i].set(values=y.values[i_min:i_max], title=y.title, unit=y.unit, color=y.color)
 
         return data
 
