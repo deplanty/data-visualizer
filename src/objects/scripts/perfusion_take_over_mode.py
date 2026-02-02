@@ -39,19 +39,21 @@ class PerfusionTakeOverModeScript(BaseScript):
         y_end_50 = mean_last * 0.5
 
         tom_start = 0
+        tom_start_index = 0
         tom_end = 0
+        tom_end_index = 0
         index = np.searchsorted(x, start)
         window_half = 20
         # Find start of TOM
         for i in range(index, len(x)):
             if np.mean(y[i - window_half : i + window_half]) < y_start_50:
                 tom_start = x[i]
+                tom_start_index = i
                 break
-        index = np.searchsorted(x, tom_start)
-        for i in range(index, len(x)):
+        # Find end of TOM
+        for i in range(tom_start_index, len(x)):
             if np.mean(y[i - window_half : i + window_half]) > y_end_50:
                 tom_end = x[i]
+                tom_end_index = i
                 break
         cursor.set_and_emit(tom_start, tom_end)
-        print(mean_first)
-        print(mean_last)
