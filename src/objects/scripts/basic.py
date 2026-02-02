@@ -1,10 +1,14 @@
+from src.objects.scripts_loader import BaseScript
 
 
 class SelectTimeScript(BaseScript):
     name = "Select time..."
+    description = "Set the cursor at the specified time"
 
+    @staticmethod
     def process(data, cursor):
         from PySide6.QtWidgets import QDialog, QInputDialog
+
         root = QDialog()
         start, ok_s = QInputDialog.getDouble(root, "Hello", "Label", cursor.start)
         if not ok_s:
@@ -19,6 +23,8 @@ class SelectTimeScript(BaseScript):
 
 class GetValuesScript(BaseScript):
     name = "Get values"
+    description = "Print the data and the cursor"
 
+    @staticmethod
     def process(data, cursor):
         print(data, cursor)
