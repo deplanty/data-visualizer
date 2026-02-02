@@ -1,3 +1,5 @@
+from PySide6.QtWidgets import QDialog, QInputDialog
+
 from src.objects.scripts_loader import BaseScript
 
 
@@ -7,8 +9,6 @@ class SelectTimeScript(BaseScript):
 
     @staticmethod
     def process(data, cursor):
-        from PySide6.QtWidgets import QDialog, QInputDialog
-
         root = QDialog()
         start, ok_s = QInputDialog.getDouble(root, "Hello", "Label", cursor.start)
         if not ok_s:

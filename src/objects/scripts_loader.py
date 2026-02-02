@@ -1,7 +1,10 @@
 import abc
-import glob
-import os
 import importlib
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.objects.data_container import DataContainer
+    from src.objects.cursor import Cursor
 
 
 class BaseScript(abc.ABC):
@@ -10,7 +13,7 @@ class BaseScript(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def process(data, cursor):
+    def process(data: "DataContainer", cursor: "Cursor"):
         pass
 
 
