@@ -1,42 +1,38 @@
 import abc
 import glob
 import os
+import importlib
 
 
 class BaseAnalyzer(abc.ABC):
+    name: str
     description: str
 
     @staticmethod
     @abc.abstractmethod
-    def process(region_x:list, region_y:list) -> float:
+    def process(region_x: list, region_y: list) -> float:
         pass
 
 
-
 class DataAnalyzer:
-    analyzers: list[BaseAnalyzer]
+    analyzers: list[type[BaseAnalyzer]]
 
     @classmethod
     def init(cls):
-        # Get all the loaders as python files
-        pyloaders = glob.glob(os.path.join("src", "objects", "analyzers", "*.py"))
-        for pyfile in pyloaders:
-            with open(pyfile) as fid:
-                exec(fid.read())
+        # Import all the analyzers
+        importlib.import_module("src.objects.analyzers")
 
-        # Get the loaders as classes
+        # Get the analyzers
         cls.analyzers = BaseAnalyzer.__subclasses__()
 
     @classmethod
-    def process(cls, analyzer_desc:str, region_x:list, region_y:list) -> float:
+    def process(cls, analyzer_name: str, region_x: list, region_y: list) -> float:
         for analyzer in cls.analyzers:
-            if analyzer.description == analyzer_desc:
-                break
+            if analyzer.name == analyzer_name:
+                return analyzer.process(region_x, region_y)
         else:
-            return None
-
-        return analyzer.process(region_x, region_y)
+            return 0
 
     @classmethod
-    def list_all(cls):
-        return [analyzer.description for analyzer in cls.analyzers]
+    def list_all(cls) -> list[str]:
+        return [analyzer.name for analyzer in cls.analyzers]
