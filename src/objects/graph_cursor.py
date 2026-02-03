@@ -1,7 +1,7 @@
 from PySide6.QtCore import Signal, QObject
 
 
-class Cursor(QObject):
+class GraphCursor(QObject):
     changed = Signal(float, float)
 
     def __init__(self):
@@ -21,7 +21,7 @@ class Cursor(QObject):
     def end(self) -> float:
         return self._end
 
-    def set(self, start:float, end:float):
+    def set(self, start: float, end: float):
         if start <= end:
             self._start = start
             self._end = end
@@ -32,6 +32,6 @@ class Cursor(QObject):
     def get(self) -> tuple:
         return self.start, self.end
 
-    def set_and_emit(self, start:float, end:float):
+    def set_and_emit(self, start: float, end: float):
         self.set(start, end)
         self.changed.emit(start, end)

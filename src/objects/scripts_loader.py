@@ -3,8 +3,8 @@ import importlib
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from objects.series import SeriesCollection
-    from src.objects.cursor import Cursor
+    from src.objects.series import SeriesCollection
+    from src.objects.graph_cursor import GraphCursor
 
 
 class BaseScript(abc.ABC):
@@ -13,7 +13,7 @@ class BaseScript(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def process(data: "SeriesCollection", cursor: "Cursor"):
+    def process(data: "SeriesCollection", cursor: "GraphCursor"):
         pass
 
 

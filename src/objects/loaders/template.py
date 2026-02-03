@@ -1,4 +1,4 @@
-from objects.series import SeriesCollection
+from src.objects.series import SeriesCollection
 from src.objects.data_loader import BaseLoader
 
 

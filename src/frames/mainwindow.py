@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PySide6.QtWidgets import QMainWindow, QFileDialog
 
-from src.objects import Cursor, DataLoader, SeriesCollection, DataAnalyzer, ScriptsLoader
+from src.objects import GraphCursor, DataLoader, SeriesCollection, DataAnalyzer, ScriptsLoader
 from src.windows import ViewShowChannels
 
 from .mainwindow_ui import MainWindowUI
@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.data = SeriesCollection()
-        self.graph_cursor = Cursor()
+        self.graph_cursor = GraphCursor()
         self.graph_cursor.changed.connect(self._on_cursor_changed)
 
         self.ui = MainWindowUI(self)
