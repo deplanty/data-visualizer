@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
-from src.objects import DataContainer, colors
+from src.objects import SeriesCollection, colors
 
 
 class ViewShowChannelsUI:
@@ -77,7 +77,7 @@ class ViewShowChannelsUI:
 
 
 class ViewShowChannels(QDialog):
-    def __init__(self, data: DataContainer):
+    def __init__(self, data: SeriesCollection):
         super().__init__()
 
         self.data = data

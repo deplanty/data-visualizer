@@ -1,4 +1,4 @@
-from src.objects.data_container import DataContainer
+from src.objects.series import SeriesCollection
 from src.objects.data_loader import BaseLoader
 
 
@@ -7,8 +7,8 @@ class Asl5000Loader(BaseLoader):
     file_desc = "ASL5000 raw binary data"
 
     @staticmethod
-    def load(filename: str) -> DataContainer:
-        data = DataContainer()
+    def load(filename: str) -> SeriesCollection:
+        data = SeriesCollection()
         data.init(channels=12)
 
         import asl5000_utils as asl

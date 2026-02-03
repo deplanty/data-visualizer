@@ -1,4 +1,4 @@
-from src.objects.data_container import DataContainer
+from src.objects.series import SeriesCollection
 from src.objects.data_loader import BaseLoader
 
 
@@ -7,9 +7,9 @@ class CsvCommaLoader(BaseLoader):
     file_desc = "CSV comma separated values"
 
     @staticmethod
-    def load(filename: str) -> DataContainer:
+    def load(filename: str) -> SeriesCollection:
         sep = ","
-        data = DataContainer()
+        data = SeriesCollection()
         with open(filename, "r") as fid:
             header = fid.readline().rstrip().split(sep)
             channels = len(header) - 1  # First is x axis
@@ -32,9 +32,9 @@ class CsvTabLoader(BaseLoader):
     file_desc = "CSV tab separated values"
 
     @staticmethod
-    def load(filename: str) -> DataContainer:
+    def load(filename: str) -> SeriesCollection:
         sep = "\t"
-        data = DataContainer()
+        data = SeriesCollection()
         with open(filename, "r") as fid:
             header = fid.readline().rstrip().split(sep)
             channels = len(header) - 1  # First is x axis
@@ -57,9 +57,9 @@ class CsvSemicolonLoader(BaseLoader):
     file_desc = "CSV semicolon separated values"
 
     @staticmethod
-    def load(filename: str) -> DataContainer:
+    def load(filename: str) -> SeriesCollection:
         sep = ";"
-        data = DataContainer()
+        data = SeriesCollection()
         with open(filename, "r") as fid:
             header = fid.readline().rstrip().split(sep)
             channels = len(header) - 1  # First is x axis

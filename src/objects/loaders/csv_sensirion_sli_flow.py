@@ -1,4 +1,4 @@
-from src.objects.data_container import DataContainer
+from src.objects.series import SeriesCollection
 from src.objects.data_loader import BaseLoader
 
 
@@ -7,8 +7,8 @@ class CsvSensirionSliLoader(BaseLoader):
     file_desc = "CSV from Sensirion SLI flow sensor"
 
     @staticmethod
-    def load(filename: str) -> DataContainer:
-        data = DataContainer()
+    def load(filename: str) -> SeriesCollection:
+        data = SeriesCollection()
         data.init(channels=1)
 
         sep = ";"

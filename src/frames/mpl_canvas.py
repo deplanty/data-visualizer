@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt import NavigationToolbar2QT
 from matplotlib.figure import Figure
 from matplotlib.widgets import SpanSelector
 
-from src.objects import DataContainer, colors
+from src.objects import SeriesCollection, colors
 
 mpl.rc("lines", linewidth=0.5)
 
@@ -45,7 +45,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
     # Method
 
-    def draw_data(self, data: DataContainer):
+    def draw_data(self, data: SeriesCollection):
         self.fig.clear()
         rows = data.size(only_show=True)
         # Manage subplot return value

@@ -3,7 +3,7 @@ import importlib
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.objects.data_container import DataContainer
+    from objects.series import SeriesCollection
     from src.objects.cursor import Cursor
 
 
@@ -13,7 +13,7 @@ class BaseScript(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def process(data: "DataContainer", cursor: "Cursor"):
+    def process(data: "SeriesCollection", cursor: "Cursor"):
         pass
 
 

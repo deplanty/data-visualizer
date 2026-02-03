@@ -3,7 +3,7 @@ import numpy as np
 from src.objects import colors
 
 
-class DataColumn:
+class Series:
     _values: list[float]
     title: str
     unit: str
@@ -112,9 +112,9 @@ class DataColumn:
             self.set_color(kwargs["color"])
 
 
-class DataContainer:
+class SeriesCollection:
     def __init__(self):
-        self._x = DataColumn()
+        self._x = Series()
         self._y = list()
 
     def __len__(self):
@@ -123,7 +123,7 @@ class DataContainer:
     # Properties
 
     @property
-    def x(self) -> DataColumn:
+    def x(self) -> Series:
         return self._x
 
     @property
@@ -157,7 +157,7 @@ class DataContainer:
         """
 
         self._x.init()
-        self._y = [DataColumn() for _ in range(channels)]
+        self._y = [Series() for _ in range(channels)]
 
     def add_row(self, values: list[float], x_index: int = 0):
         self._x.values.append(float(values.pop(x_index)))
@@ -189,7 +189,7 @@ class DataContainer:
         if cursor.end > np.max(self.x.values):
             i_max += 1
 
-        data = DataContainer()
+        data = SeriesCollection()
         data.init(sum(1 for y in self.y if y.visible))
 
         data.x.set_values(self.x.values[i_min:i_max])

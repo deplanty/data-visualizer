@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PySide6.QtWidgets import QMainWindow, QFileDialog
 
-from src.objects import Cursor, DataLoader, DataContainer, DataAnalyzer, ScriptsLoader
+from src.objects import Cursor, DataLoader, SeriesCollection, DataAnalyzer, ScriptsLoader
 from src.windows import ViewShowChannels
 
 from .mainwindow_ui import MainWindowUI
@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.data = DataContainer()
+        self.data = SeriesCollection()
         self.graph_cursor = Cursor()
         self.graph_cursor.changed.connect(self._on_cursor_changed)
 
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         self.ui.mpl_canvas.draw_data(self.data)
         self.ui.set_channels(len(self.data))
 
-    def save_to_file(self, data: DataContainer, filename: str):
+    def save_to_file(self, data: SeriesCollection, filename: str):
         with open(filename, "w") as fid:
             header = [data.x.label]
             header.extend([y.label for y in data.y])

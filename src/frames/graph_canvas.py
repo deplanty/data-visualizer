@@ -1,6 +1,6 @@
 import pyqtgraph as pg
 
-from src.objects import DataContainer, colors
+from src.objects import SeriesCollection, colors
 
 
 pg.setConfigOption("background", "w")
@@ -13,7 +13,7 @@ class GraphCanvas(pg.GraphicsLayoutWidget):
         self.axes = list()
         self.spans = list()
 
-    def draw_data(self, data: DataContainer):
+    def draw_data(self, data: SeriesCollection):
 
         rows = data.size(only_show=True)
         # Draw the channels
