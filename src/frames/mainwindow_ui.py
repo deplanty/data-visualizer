@@ -1,4 +1,14 @@
-from PySide6 import QtWidgets
+from PySide6.QtWidgets import (
+    QMainWindow,
+    QWidget,
+    QHBoxLayout,
+    QGridLayout,
+    QComboBox,
+    QLabel,
+    QSpacerItem,
+    QSizePolicy,
+    QVBoxLayout,
+)
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
@@ -7,8 +17,8 @@ from src.objects import DataAnalyzer
 from .mpl_canvas import MplCanvas
 
 
-class MainWindowUI():
-    def __init__(self, master:QtWidgets):
+class MainWindowUI:
+    def __init__(self, master: QMainWindow):
         self.master = master
 
         self.master.setWindowTitle("Data visualizer")
@@ -41,43 +51,41 @@ class MainWindowUI():
         self.menu_scripts_list = list()
 
         # Main widget
-        frame = QtWidgets.QWidget()
+        frame = QWidget()
         self.master.setCentralWidget(frame)
 
         # Fill the main widget
-        self.layout_h = QtWidgets.QHBoxLayout()
-        self.layout_grid = QtWidgets.QGridLayout()
+        self.layout_h = QHBoxLayout()
+        self.layout_grid = QGridLayout()
         # self.layout_grid.setVerticalSpacing(0)
 
         self.grid = list()
         for i in range(5):
             # Mesure function to use
-            combo_measure = QtWidgets.QComboBox()
+            combo_measure = QComboBox()
             combo_measure.setFixedWidth(100)
             self.layout_grid.addWidget(combo_measure, i, 0)
             # On which channel the measure is done
-            combo_channel = QtWidgets.QComboBox()
+            combo_channel = QComboBox()
             combo_channel.setFixedWidth(40)
             self.layout_grid.addWidget(combo_channel, i, 1)
             # Result of the measure
-            label = QtWidgets.QLabel()
+            label = QLabel()
             label.setFixedWidth(60)
             self.layout_grid.addWidget(label, i, 2)
-            self.grid.append({
-                "measure": combo_measure,
-                "channel": combo_channel,
-                "label": label
-            })
+            self.grid.append({"measure": combo_measure, "channel": combo_channel, "label": label})
         # Space to put the rows on top of the widget
-        verticalSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.layout_grid.addItem(verticalSpacer, i + 1, 0)
+        verticalSpacer = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+        self.layout_grid.addItem(verticalSpacer, 5, 0)
 
         # Graph and navigation toolbox
         self.layout_h.addLayout(self.layout_grid, 1)
-        self.layout_v_graph = QtWidgets.QVBoxLayout()
+        self.layout_v_graph = QVBoxLayout()
         self.mpl_canvas = MplCanvas()
         self.layout_v_graph.addWidget(self.mpl_canvas)
-        self.layout_v_graph.addWidget(self.mpl_canvas.toolbar)
+        self.layout_v_graph.addWidget(self.mpl_canvas.toolbar)  # type: ignore
         self.layout_h.addLayout(self.layout_v_graph, 5)
         frame.setLayout(self.layout_h)
 
@@ -90,13 +98,13 @@ class MainWindowUI():
             c = row["channel"]
             c.addItem("1")
 
-    def set_channels(self, n_channels:int):
+    def set_channels(self, n_channels: int):
         for row in self.grid:
             c = row["channel"]
             c.clear()
             c.addItems(str(i + 1) for i in range(n_channels))
 
-    def add_script_menu(self, name:str):
+    def add_script_menu(self, name: str):
         menu = QAction(name)
         self.menu_scripts.addAction(menu)
         self.menu_scripts_list.append(menu)

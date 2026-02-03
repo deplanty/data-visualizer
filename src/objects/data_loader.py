@@ -33,16 +33,14 @@ class DataLoader:
         cls.loaders = BaseLoader.__subclasses__()
 
     @classmethod
-    def load(cls, filename: str, file_type: str) -> DataContainer | None:
+    def load(cls, filename: str, file_type: str) -> DataContainer:
         """Use the correct loader to read `filename` with the type `file_type`."""
 
         for loader in cls.loaders:
             if loader.get_file_type() == file_type:
-                break
+                return loader.load(filename)
         else:
-            return None
-
-        return loader.load(filename)
+            return DataContainer()
 
     @classmethod
     def list_all_file_type(cls):
