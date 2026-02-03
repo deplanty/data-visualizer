@@ -18,10 +18,10 @@ class CsvRigelMultifloLoader(BaseLoader):
                 fid.readline()
             # Add metadata
             data.x.set(title="Time", unit="sec")
-            data.y[0].set(title="Cumulated volume", unit="ml", show=True)
-            data.y[1].set(title="Instant flow", unit="ml/h", show=True)
-            data.y[2].set(title="Mean flow", unit="ml/h", show=False)
-            data.y[3].set(title="Pressure", unit="mmHg", show=False)
+            data.y[0].set(title="Cumulated volume", unit="ml", visible=True)
+            data.y[1].set(title="Instant flow", unit="ml/h", visible=True)
+            data.y[2].set(title="Mean flow", unit="ml/h", visible=False)
+            data.y[3].set(title="Pressure", unit="mmHg", visible=False)
 
             for line in fid:
                 line = line.rstrip().split(",")

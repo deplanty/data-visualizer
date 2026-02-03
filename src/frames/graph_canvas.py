@@ -13,13 +13,13 @@ class GraphCanvas(pg.GraphicsLayoutWidget):
         self.axes = list()
         self.spans = list()
 
-    def draw_data(self, data:DataContainer):
+    def draw_data(self, data: DataContainer):
 
         rows = data.size(only_show=True)
         # Draw the channels
         for i, channel in enumerate(data.y):
             # Continue if the axis should not be shown
-            if not channel.show:
+            if not channel.visible:
                 continue
 
             plt = self.addPlot(row=i, col=0)

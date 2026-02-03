@@ -5,7 +5,8 @@ import itertools
 from PySide6.QtCore import Signal
 
 import matplotlib as mpl
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt import NavigationToolbar2QT
 from matplotlib.figure import Figure
 from matplotlib.widgets import SpanSelector
 
@@ -17,15 +18,16 @@ mpl.rc("lines", linewidth=0.5)
 class MplCanvas(FigureCanvasQTAgg):
     signal_selection_changed = Signal(float, float)
 
-    ch_colors = itertools.cycle([
-        colors.RED,
-        colors.GREEN,
-        colors.BLUE,
-        colors.YELLOW,
-        colors.PURPLE,
-        colors.CYAN,
-    ])
-
+    ch_colors = itertools.cycle(
+        [
+            colors.RED,
+            colors.GREEN,
+            colors.BLUE,
+            colors.YELLOW,
+            colors.PURPLE,
+            colors.CYAN,
+        ]
+    )
 
     def __init__(self, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
@@ -43,7 +45,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
     # Method
 
-    def draw_data(self, data:DataContainer):
+    def draw_data(self, data: DataContainer):
         self.fig.clear()
         rows = data.size(only_show=True)
         # Manage subplot return value
@@ -59,7 +61,7 @@ class MplCanvas(FigureCanvasQTAgg):
         i = 0
         for channel in data.y:
             # Continue if the axis should not be shown
-            if not channel.show:
+            if not channel.visible:
                 continue
             ax = self.axes[i]
             if channel.color is None:
@@ -81,7 +83,7 @@ class MplCanvas(FigureCanvasQTAgg):
                 props=dict(facecolor="black", alpha=0.05),
                 interactive=True,
                 drag_from_anywhere=True,
-                onmove_callback=self._on_selection_changed
+                onmove_callback=self._on_selection_changed,
             )
             self.spans.append(span)
             i += 1

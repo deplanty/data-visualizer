@@ -24,10 +24,7 @@ def get_between(
     :rtype: tuple[ndarray[Any, Any], ndarray[Any, Any]]
     """
 
-    to_end = x < end
-    from_start = x > start
-    keep = from_start * to_end
-
+    keep = (start < x) & (x < end)
     return x[keep], y[keep]
 
 
@@ -55,7 +52,9 @@ def remove_spikes(curve: np.ndarray, window: int = 50, height_factor: float = 1.
     return curve_cut
 
 
-def analyze_tom(data, cursor, detection: float, duration_mean: float = 60):
+def analyze_tom(
+    data, cursor, detection: float, duration_mean: float = 60, tom_min_duration: float = 5
+):
     """
     Analyze the Take Over Mode of the given region.
 
@@ -67,6 +66,8 @@ def analyze_tom(data, cursor, detection: float, duration_mean: float = 60):
     :type detection: float
     :param duration_mean: The duration (in seconds) to compute the flow mean.
     :type duration_mean: float
+    :param tom_min_duration: The minimum duration of the TOM.
+    :type tom_min_duration: float
     """
 
     x = np.array(data.x.values)
@@ -83,8 +84,8 @@ def analyze_tom(data, cursor, detection: float, duration_mean: float = 60):
     mean_last = np.mean(last_y)
 
     # Remove the spikes in the selected region
-    x, y_unspiked = get_between(x, y, start, end)
-    y_unspiked = remove_spikes(y_unspiked, window=100, height_factor=1.2)
+    x_selected, y_selected = get_between(x, y, start, end)
+    y_unspiked = remove_spikes(y_selected, window=10, height_factor=1.2)
 
     # Determine the threshold to detect the start and end of TOM
     delta = np.max([mean_first, mean_last]) - np.min(y_unspiked)
@@ -96,25 +97,29 @@ def analyze_tom(data, cursor, detection: float, duration_mean: float = 60):
     tom_end = 0
     tom_end_index = 0
     # Find start of TOM
-    for i in range(0, len(x)):
+    for i in range(0, len(x_selected)):
         if y_unspiked[i] < y_detection:
-            tom_start = x[i]
+            tom_start = x_selected[i]
             tom_start_index = i
             break
     # Find end of TOM
-    for i in range(tom_start_index, len(x)):
+    for i in range(tom_start_index, len(x_selected)):
         if y_unspiked[i] > y_detection:
-            tom_end = x[i]
+            tom_end = x_selected[i]
             tom_end_index = i
-            break
+            if tom_end - tom_start > tom_min_duration:
+                break
+
+    cursor.set_and_emit(tom_start, tom_end)
 
     # Mean value during the TOM
     mean_tom = np.mean(y[tom_start_index:tom_end_index])
 
+    y_unit = data.y[0].unit
     print(f"Detection: {detection * 100:2.1f}%")
-    print(f"Mean before TOM: {mean_first:.2f}")
-    print(f"Mean after TOM: {mean_last:.2f}")
-    print(f"Mean TOM: {mean_tom:.2f}")
+    print(f"Mean before TOM: {mean_first:.2f} {y_unit}")
+    print(f"Mean after TOM: {mean_last:.2f} {y_unit}")
+    print(f"Mean TOM: {mean_tom:.2f} {y_unit}")
     print(f"Duration: {tom_end - tom_start:.1f} s")
     print("")
 
@@ -125,5 +130,4 @@ class PerfusionTakeOverModeScript(BaseScript):
 
     @staticmethod
     def process(data, cursor):
-        analyze_tom(data, cursor, 0.5, 60)
-        analyze_tom(data, cursor, 0.1, 60)
+        analyze_tom(data, cursor, 0.6, 60)

@@ -7,7 +7,7 @@ class Color:
     It has an alpha value from [0.0 - 1.0].
     """
 
-    def __init__(self, rgb:tuple=(1.0, 1.0, 1.0), alpha:float=1, max_int_byte=1):
+    def __init__(self, rgb: tuple = (1.0, 1.0, 1.0), alpha: float = 1, max_int_byte=1):
         self._rgb = rgb
         self._alpha = alpha
         self._max_int_byte = max_int_byte
@@ -16,7 +16,7 @@ class Color:
 
     @property
     def max_int_value(self):
-        return 2**(8 * self._max_int_byte) - 1
+        return 2 ** (8 * self._max_int_byte) - 1
 
     @property
     def r(self):
@@ -51,7 +51,7 @@ class Color:
         return self.__float_to_int(self.a)
 
     @property
-    def rgb(self):
+    def rgb(self) -> tuple[float, float, float]:
         return (self.r, self.g, self.b)
 
     @property
@@ -80,13 +80,13 @@ class Color:
 
     # Methods
 
-    def from_int(self, rgb:tuple[int]=(255, 255, 255), alpha:int=255):
+    def from_int(self, rgb: tuple[int, int, int] = (255, 255, 255), alpha: int = 255):
         self._rgb = tuple(self.__int_to_float(x) for x in rgb)
         self._alpha = self.__int_to_float(alpha)
 
     # Tools
 
-    def __from_ahex(self, ahex:str="#ffffffff"):
+    def __from_ahex(self, ahex: str = "#ffffffff"):
         if ahex.startswith("#"):
             ahex = ahex[1:]
         # Suppose max_int_byte == 1
@@ -97,7 +97,7 @@ class Color:
         self._rgb = (r, g, b)
         self._alpha = a
 
-    def __from_hex(self, hex:str="#ffffff"):
+    def __from_hex(self, hex: str = "#ffffff"):
         if hex.startswith("#"):
             hex = hex[1:]
         # Suppose max_int_byte == 1
@@ -107,50 +107,49 @@ class Color:
         self._rgb = (r, g, b)
         self._alpha = 1.0
 
-    def __float_to_int(self, value:float) -> int:
+    def __float_to_int(self, value: float) -> int:
         return int(value * self.max_int_value)
 
-    def __int_to_float(self, value:int) -> float:
+    def __int_to_float(self, value: int) -> float:
         return value / self.max_int_value
 
-    def __float_to_hex(self, value:float) -> str:
+    def __float_to_hex(self, value: float) -> str:
         return f"{self.__float_to_int(value):02x}"
 
-    def __hex_to_float(self, value:str) -> float:
+    def __hex_to_float(self, value: str) -> float:
         return self.__int_to_float(int(value, 16))
 
     @classmethod
-    def from_hex(cls, hex:str="#ffffff"):
+    def from_hex(cls, hex: str = "#ffffff"):
         color = cls()
         color.__from_hex(hex)
         return color
 
     @classmethod
-    def from_ahex(cls, ahex:str="#ffffffff"):
+    def from_ahex(cls, ahex: str = "#ffffffff"):
         color = cls()
         color.__from_ahex(ahex)
         return color
 
 
-
-def new(rgb:tuple=(1.0, 1.0, 1.0), alpha:float=1, max_int_byte=1):
+def new(rgb: tuple = (1.0, 1.0, 1.0), alpha: float = 1, max_int_byte=1):
     return Color(rgb, alpha, max_int_byte)
 
 
-def from_rgba_int(rgba:tuple[int]=(255, 255, 255, 255), max_int_byte=1):
+def from_rgba_int(rgba: tuple[int, int, int, int] = (255, 255, 255, 255), max_int_byte=1):
     color = Color(max_int_byte=max_int_byte)
-    *rgb, alpha = rgba
+    rgb = (rgba[0], rgba[1], rgba[2])
+    alpha = rgba[3]
     color.from_int(rgb, alpha)
     return color
 
 
-def from_ahex(ahex:str="#ffffffff"):
+def from_ahex(ahex: str = "#ffffffff"):
     return Color.from_ahex(ahex)
 
 
-def from_hex(hex:str="#ffffff"):
+def from_hex(hex: str = "#ffffff"):
     return Color.from_hex(hex)
-
 
 
 RED = Color((1, 0, 0))
@@ -171,20 +170,22 @@ LAVENDER = Color.from_hex("#967adc")
 PINK_ROSE = Color.from_hex("#d770ad")
 
 
-sample = itertools.cycle([
-    GRAPEFRUIT,
-    SUNFLOWER,
-    GRASS,
-    BLUE_JEANS,
-    LAVENDER,
-    BITTERSWEET,
-    MINT,
-    PINK_ROSE,
-    AQUA,
-])
+sample = itertools.cycle(
+    [
+        GRAPEFRUIT,
+        SUNFLOWER,
+        GRASS,
+        BLUE_JEANS,
+        LAVENDER,
+        BITTERSWEET,
+        MINT,
+        PINK_ROSE,
+        AQUA,
+    ]
+)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     color = Color((1.0, 0.75, 0.5))
     assert color.rgb == (1.0, 0.75, 0.5)
     assert color.rgb_int == (255, 191, 127)

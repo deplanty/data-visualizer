@@ -7,30 +7,33 @@ class DataColumn:
     _values: list[float]
     title: str
     unit: str
-    show: bool
+    visible: bool
     color: colors.Color
 
     def __init__(self):
         self._values = list()
         self.title = str()
         self.unit = str()
-        self.show = True
+        self.visible = True
         self.color = next(colors.sample)
 
     def __str__(self):
-        n = len(self._values)
         # Process label
         if self.label == "":
             label = ""
         else:
             label = self.label + ": "
+
         # Process quantity
+        n = len(self._values)
         if n == 0:
-            return f"{label}Empty"
+            quantity = "Empty"
         elif n == 1:
-            return f"{label}{n} value"
+            quantity = f"{n} value"
         else:
-            return f"{label}{n} values"
+            quantity = f"{n} values"
+
+        return f"{label}{quantity}"
 
     def __len__(self):
         return len(self._values)
@@ -61,40 +64,52 @@ class DataColumn:
         self.title = ""
         self.unit = ""
 
-    def set(
-        self,
-        values: list = None,
-        title: str = None,
-        unit: str = None,
-        show: bool = None,
-        color: tuple = None,
-    ):
+    def set_values(self, values: list):
+        self._values.clear()
+        self._values.extend(values)
+
+    def set_title(self, title: str):
+        self.title = title
+
+    def set_unit(self, unit: str):
+        self.unit = unit
+
+    def set_visible(self, enabled: bool):
+        self.visible = enabled
+
+    def set_color(self, color: tuple):
+        self.color = colors.Color(color)
+
+    def set(self, **kwargs):
         """
         Set the values for the parameters.
 
-        Args:
-            values (list): clear current values and replace with new. If None, do nothing.
-            title (str): the new title. If None, do nothing.
-            unit (str): the new unit. If None, do nothing.
-            show (bool): the data is shown.
-            color: (tuple): the color of the curve.
+        :param values: Clear current values and replace with new.
+        :type list:
+        :param title: The new title.
+        :type str:
+        :param unit: The new unit.
+        :type str:
+        :param visible: The data is shown.
+        :type bool:
+        :param color: The color of the curve.
+        :type tuple:
         """
 
-        if values is not None:
-            self._values.clear()
-            self._values.extend(values)
+        if "values" in kwargs:
+            self.set_values(kwargs["values"])
 
-        if title is not None:
-            self.title = title
+        if "title" in kwargs:
+            self.set_title(kwargs["title"])
 
-        if unit is not None:
-            self.unit = unit
+        if "unit" in kwargs:
+            self.set_unit(kwargs["unit"])
 
-        if show is not None:
-            self.show = show
+        if "visible" in kwargs:
+            self.set_visible(kwargs["visible"])
 
-        if color is not None:
-            self.color = color
+        if "color" in kwargs:
+            self.set_color(kwargs["color"])
 
 
 class DataContainer:
@@ -120,7 +135,7 @@ class DataContainer:
     def get_x_data(self) -> list:
         return self._x.values
 
-    def get_y_data(self, index: int, slice_: tuple = None) -> list:
+    def get_y_data(self, index: int, slice_: tuple | None = None) -> list:
         if slice_ is None:
             return self._y[index].values
         elif len(slice_) == 2 and slice_[0] == slice_[1]:
@@ -157,7 +172,7 @@ class DataContainer:
 
     def size(self, only_show=False):
         if only_show:
-            return sum([1 for y in self._y if y.show])
+            return sum([1 for y in self._y if y.visible])
         else:
             return len(self._y)
 
@@ -175,17 +190,18 @@ class DataContainer:
             i_max += 1
 
         data = DataContainer()
-        data.init(sum(1 for y in self.y if y.show))
+        data.init(sum(1 for y in self.y if y.visible))
 
-        data.x.set(
-            values=self.x.values[i_min:i_max],
-            title=self.x.title,
-            unit=self.x.unit,
-            color=self.x.color,
-        )
+        data.x.set_values(self.x.values[i_min:i_max])
+        data.x.set_title(title=self.x.title)
+        data.x.set_unit(self.x.unit)
+        data.x.set_color(self.x.color.rgb)
 
-        for i, y in enumerate([y for y in self.y if y.show]):
-            data.y[i].set(values=y.values[i_min:i_max], title=y.title, unit=y.unit, color=y.color)
+        for i, y in enumerate([y for y in self.y if y.visible]):
+            data.y[i].set_values(y.values[i_min:i_max])
+            data.y[i].set_title(y.title)
+            data.y[i].set_unit(y.unit)
+            data.y[i].set_color(y.color.rgb)
 
         return data
 

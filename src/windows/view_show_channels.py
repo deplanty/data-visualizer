@@ -1,4 +1,15 @@
-from PySide6.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox, QLabel, QCheckBox, QPushButton, QColorDialog
+from PySide6.QtWidgets import (
+    QWidget,
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGridLayout,
+    QGroupBox,
+    QLabel,
+    QCheckBox,
+    QPushButton,
+    QColorDialog,
+)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
@@ -6,7 +17,7 @@ from src.objects import DataContainer, colors
 
 
 class ViewShowChannelsUI:
-    def __init__(self, parent:QWidget, channels):
+    def __init__(self, parent: QWidget, channels):
         parent.setWindowTitle("Data visualizer - Channels")
 
         layout = QVBoxLayout()
@@ -33,7 +44,9 @@ class ViewShowChannelsUI:
             # Checkbox with the channel name
             checkbox = QCheckBox(channel.label)
             checkbox.setTristate(False)
-            checkbox.setCheckState(Qt.Checked if channel.show else Qt.Unchecked)
+            checkbox.setCheckState(
+                Qt.CheckState.Checked if channel.visible else Qt.CheckState.Unchecked
+            )
             grid_layout_settings.addWidget(checkbox, row, 1)
             self.checkboxes.append(checkbox)
             # Button to change the curve color
@@ -64,7 +77,7 @@ class ViewShowChannelsUI:
 
 
 class ViewShowChannels(QDialog):
-    def __init__(self, data:DataContainer):
+    def __init__(self, data: DataContainer):
         super().__init__()
 
         self.data = data
@@ -81,7 +94,7 @@ class ViewShowChannels(QDialog):
 
     def _on_btn_validate_clicked(self):
         for check, y in zip(self.ui.checkboxes, self.data.y):
-            y.set(show=check.checkState() == Qt.Checked)
+            y.set(show=check.checkState() == Qt.CheckState.Checked)
 
         self._changed = True
         self.close()
@@ -97,7 +110,7 @@ class ViewShowChannels(QDialog):
         dialog.exec()
         color = dialog.selectedColor()
         if color.isValid():
-            color = colors.from_rgba_int(color.toTuple())
+            color = colors.from_rgba_int(color.toTuple())  # type: ignore
             self.data.y[index].set(color=color)
             self.ui.l_colors[index].setStyleSheet(f"background-color: {color.hex}")
 
