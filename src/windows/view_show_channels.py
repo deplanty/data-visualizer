@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import (
-    QWidget,
     QDialog,
     QVBoxLayout,
     QHBoxLayout,
@@ -17,7 +16,7 @@ from src.objects import SeriesCollection, colors
 
 
 class ViewShowChannelsUI:
-    def __init__(self, parent: QWidget, channels):
+    def __init__(self, parent: QDialog, channels):
         parent.setWindowTitle("Data visualizer - Channels")
 
         layout = QVBoxLayout()

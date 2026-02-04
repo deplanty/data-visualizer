@@ -2,9 +2,10 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.signal import savgol_filter
 
 from src.objects.scripts_loader import BaseScript
-from src.windows import WindowJournal
+from src.windows import WindowJournal, DialogMultiInput
 
 
 def get_between(
@@ -50,7 +51,34 @@ def remove_spikes(curve: np.ndarray, window: int = 50, height_factor: float = 1.
             if segment[j] < median / height_factor or segment[j] > median * height_factor:
                 curve_cut[i * window + j] = median
 
-    return curve_cut
+    return curve_cut  # type: ignore
+
+
+def remove_spikes_bis(
+    curve: np.ndarray, window: int = 50, height_factor: float = 1.5
+) -> np.ndarray:
+    """
+    Remove the spikes from a curve.
+
+    :param curve: The data containing spikes.
+    :type curve: np.ndarray
+    :param window: The number of elements to use to determine if a peak is a spike.
+    :type window: int
+    :return: The curve without the spikes.
+    :rtype: ndarray[Any, Any]
+    """
+
+    curve_cut = copy.deepcopy(curve)
+    win_half = window // 2
+    for i in range(win_half, len(curve) - win_half):
+        segment = curve[i - win_half : i + win_half]
+        median = np.median(segment)
+        if curve[i] < median / height_factor or curve[i] > median * height_factor:
+            curve_cut[i] = median
+
+    curve_cut = savgol_filter(curve_cut, window, 2)
+
+    return curve_cut  # type: ignore
 
 
 def analyze_tom(
@@ -86,7 +114,7 @@ def analyze_tom(
 
     # Remove the spikes in the selected region
     x_selected, y_selected = get_between(x, y, start, end)
-    y_unspiked = remove_spikes(y_selected, window=10, height_factor=1.2)
+    y_unspiked = remove_spikes_bis(y_selected, window=50, height_factor=1.25)
 
     # Determine the threshold to detect the start and end of TOM
     delta = np.max([mean_first, mean_last]) - np.min(y_unspiked)
@@ -124,6 +152,11 @@ def analyze_tom(
     print(f"Duration: {tom_end - tom_start:.1f} s")
     print("")
 
+    plt.figure()
+    plt.plot(x_selected, y_selected)
+    plt.plot(x_selected, y_unspiked)
+    plt.show()
+
 
 class PerfusionTakeOverModeScript(BaseScript):
     name = "Perfusion evaluation of the Take Over Mode"
@@ -131,4 +164,16 @@ class PerfusionTakeOverModeScript(BaseScript):
 
     @staticmethod
     def process(data, cursor):
-        analyze_tom(data, cursor, 0.6, 60)
+        dialog = DialogMultiInput()
+        dialog.add_input_float("Percent of Peak-Peak", "%", 50)
+        dialog.add_input_float("Duration to compute mean", "s", 60)
+        dialog.exec()
+
+        if not dialog.confirmed:
+            return
+
+        values = dialog.get_values()
+        detection = values["Percent of Peak-Peak"] / 100
+        duration_mean = values["Duration to compute mean"]
+
+        analyze_tom(data, cursor, detection, duration_mean)
