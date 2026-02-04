@@ -1,11 +1,15 @@
 import copy
+from typing import TYPE_CHECKING
 
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
 
 from src.objects.scripts_loader import BaseScript
+from src.objects import Series
 from src.windows import WindowJournal, DialogMultiInput
+
+if TYPE_CHECKING:
+    from src.objects import SeriesCollection, GraphCursor
 
 
 def get_between(
@@ -82,7 +86,11 @@ def remove_spikes_bis(
 
 
 def analyze_tom(
-    data, cursor, detection: float, duration_mean: float = 60, tom_min_duration: float = 5
+    data: "SeriesCollection",
+    cursor: "GraphCursor",
+    detection: float,
+    duration_mean: float = 60,
+    tom_min_duration: float = 5,
 ):
     """
     Analyze the Take Over Mode of the given region.
@@ -116,6 +124,12 @@ def analyze_tom(
     x_selected, y_selected = get_between(x, y, start, end)
     y_unspiked = remove_spikes_bis(y_selected, window=50, height_factor=1.25)
 
+    # Add a series to display the curved with the spikes removed
+    series = Series()
+    series.set_values(remove_spikes_bis(y, window=50, height_factor=1.25))  # type: ignore
+    series.set(title="Smooth", unit=data.y[0].unit)
+    data.add_series(series)
+
     # Determine the threshold to detect the start and end of TOM
     delta = np.max([mean_first, mean_last]) - np.min(y_unspiked)
     y_detection = delta * detection
@@ -142,7 +156,7 @@ def analyze_tom(
     cursor.set_and_emit(tom_start, tom_end)
 
     # Mean value during the TOM
-    mean_tom = np.mean(y[tom_start_index:tom_end_index])
+    mean_tom = np.mean(y_selected[tom_start_index:tom_end_index])
 
     y_unit = data.y[0].unit
     print(f"Detection: {detection * 100:2.1f}%")
@@ -151,11 +165,6 @@ def analyze_tom(
     print(f"Mean TOM: {mean_tom:.2f} {y_unit}")
     print(f"Duration: {tom_end - tom_start:.1f} s")
     print("")
-
-    plt.figure()
-    plt.plot(x_selected, y_selected)
-    plt.plot(x_selected, y_unspiked)
-    plt.show()
 
 
 class PerfusionTakeOverModeScript(BaseScript):

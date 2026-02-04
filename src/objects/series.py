@@ -1,4 +1,5 @@
 import numpy as np
+from PySide6.QtCore import QObject, Signal
 
 from src.objects import colors
 
@@ -112,8 +113,12 @@ class Series:
             self.set_color(kwargs["color"])
 
 
-class SeriesCollection:
+class SeriesCollection(QObject):
+    changed = Signal()
+
     def __init__(self):
+        super().__init__()
+
         self._x = Series()
         self._y = list()
 
@@ -210,3 +215,7 @@ class SeriesCollection:
             row = [self.x.values[i]]
             row.extend([y.values[i] for y in self.y])
             yield row
+
+    def add_series(self, series: Series):
+        self._y.append(series)
+        self.changed.emit()

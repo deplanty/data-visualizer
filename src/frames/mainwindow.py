@@ -42,6 +42,8 @@ class MainWindow(QMainWindow):
             "test/Sensirion 5ml h 2.csv", "CSV from Sensirion SLI flow sensor (*.csv)"
         )
 
+        self.data.changed.connect(self._on_data_changed)
+
     # Events
 
     def _on_menu_file_exit_triggered(self):
@@ -101,6 +103,10 @@ class MainWindow(QMainWindow):
     def on_combobox_changed(self):
         xmin, xmax = self.ui.mpl_canvas.get_selection()
         self.process_measures(xmin, xmax)
+
+    def _on_data_changed(self):
+        self.ui.mpl_canvas.draw_data(self.data)
+        self.ui.set_channels(len(self.data))
 
     # Methods
 
