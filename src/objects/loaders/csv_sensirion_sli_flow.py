@@ -1,5 +1,19 @@
+import re
+
 from src.objects.series import SeriesCollection
 from src.objects.data_loader import BaseLoader
+
+
+def to_float(value: str) -> float:
+    # The values are "french style" with a comma as the decimal separator and a space as
+    # a separator for thousands.
+    # The values are surrounded by ".
+    # Example: "1 000,1646" for 1000.1646
+
+    value = value.strip('"')
+    value = value.replace(",", ".")
+    value = re.sub(r"\s", "", value)
+    return float(value)
 
 
 class CsvSensirionSliLoader(BaseLoader):
@@ -12,7 +26,7 @@ class CsvSensirionSliLoader(BaseLoader):
         data.init(channels=1)
 
         sep = ";"
-        with open(filename, "r") as fid:
+        with open(filename, "r", encoding="utf-8") as fid:
             # The 14 first lines are the header
             for _ in range(14):
                 fid.readline()
@@ -25,10 +39,9 @@ class CsvSensirionSliLoader(BaseLoader):
             for line in fid:
                 line = line.rstrip().split(sep)
                 # First line is ignored because its the sample number.
-                # The values are "french style" with a comma as the decimal separator.
-                # The values are surrounded by \"
-                x = float(line[1].strip('"').replace(",", "."))
-                y = float(line[2].strip('"').replace(",", "."))
+
+                x = to_float(line[1])
+                y = to_float(line[2])
                 data.add_row([x, y])
 
         return data
