@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.objects.scripts_loader import BaseScript
+from src.windows import WindowJournal
 
 
 def get_between(
