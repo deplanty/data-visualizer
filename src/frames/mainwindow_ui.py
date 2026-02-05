@@ -13,6 +13,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
 from src.objects import DataAnalyzer
+from src.widgets import DockJournal
 
 from .mpl_canvas import MplCanvas
 
@@ -97,6 +98,9 @@ class MainWindowUI:
 
             c = row["channel"]
             c.addItem("1")
+
+        self.journal = DockJournal()
+        self.master.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.journal)
 
     def set_channels(self, n_channels: int):
         for row in self.grid:

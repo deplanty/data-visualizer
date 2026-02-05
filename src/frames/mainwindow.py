@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QMainWindow, QFileDialog
 
 from src.objects import GraphCursor, DataLoader, SeriesCollection, DataAnalyzer, ScriptsLoader
 from src.windows import ViewShowChannels
+import src.preload as pl
 
 from .mainwindow_ui import MainWindowUI
 
@@ -37,6 +38,8 @@ class MainWindow(QMainWindow):
         for row in self.ui.grid:
             row["measure"].activated.connect(self.on_combobox_changed)
             row["channel"].activated.connect(self.on_combobox_changed)
+
+        pl.logger = self.ui.journal
 
         self.load_from_file(
             "test/Sensirion 5ml h 2.csv", "CSV from Sensirion SLI flow sensor (*.csv)"

@@ -6,7 +6,8 @@ from scipy.signal import savgol_filter
 
 from src.objects.scripts_loader import BaseScript
 from src.objects import Series
-from src.windows import WindowJournal, DialogMultiInput
+from src.windows import DialogMultiInput
+import src.preload as pl
 
 if TYPE_CHECKING:
     from src.objects import SeriesCollection, GraphCursor
@@ -159,12 +160,12 @@ def analyze_tom(
     mean_tom = np.mean(y_selected[tom_start_index:tom_end_index])
 
     y_unit = data.y[0].unit
-    print(f"Detection: {detection * 100:2.1f}%")
-    print(f"Mean before TOM: {mean_first:.2f} {y_unit}")
-    print(f"Mean after TOM: {mean_last:.2f} {y_unit}")
-    print(f"Mean TOM: {mean_tom:.2f} {y_unit}")
-    print(f"Duration: {tom_end - tom_start:.1f} s")
-    print("")
+    pl.log(f"Detection: {detection * 100:2.1f}%")
+    pl.log(f"Mean before TOM: {mean_first:.2f} {y_unit}")
+    pl.log(f"Mean after TOM: {mean_last:.2f} {y_unit}")
+    pl.log(f"Mean TOM: {mean_tom:.2f} {y_unit}")
+    pl.log(f"Duration: {tom_end - tom_start:.1f} s")
+    pl.log("")
 
 
 class PerfusionTakeOverModeScript(BaseScript):
