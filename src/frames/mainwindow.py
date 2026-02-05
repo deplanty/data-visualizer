@@ -36,16 +36,10 @@ class MainWindow(QMainWindow):
             menu.triggered.connect(self._on_menu_scripts_triggered)
         self.ui.mpl_canvas.signal_selection_changed.connect(self._on_selection_changed)
         for row in self.ui.grid:
-            row["measure"].activated.connect(self.on_combobox_changed)
-            row["channel"].activated.connect(self.on_combobox_changed)
+            row["measure"].activated.connect(self._on_combobox_changed)
+            row["channel"].activated.connect(self._on_combobox_changed)
 
         pl.logger = self.ui.journal
-
-        self.load_from_file(
-            "test/Sensirion 5ml h 2.csv", "CSV from Sensirion SLI flow sensor (*.csv)"
-        )
-
-        self.data.changed.connect(self._on_data_changed)
 
     # Events
 
@@ -103,20 +97,19 @@ class MainWindow(QMainWindow):
             span.extents = (xmin, xmax)
             span.set_visible(True)
 
-    def on_combobox_changed(self):
+    def _on_combobox_changed(self):
         xmin, xmax = self.ui.mpl_canvas.get_selection()
         self.process_measures(xmin, xmax)
 
     def _on_data_changed(self):
-        self.ui.mpl_canvas.draw_data(self.data)
-        self.ui.set_channels(len(self.data))
+        self.update_ui_from_series()
 
     # Methods
 
     def load_from_file(self, filename: str, file_type: str):
         self.data = DataLoader.load(filename, file_type)
-        self.ui.mpl_canvas.draw_data(self.data)
-        self.ui.set_channels(len(self.data))
+        self.data.changed.connect(self._on_data_changed)
+        self.update_ui_from_series()
 
     def save_to_file(self, data: SeriesCollection, filename: str):
         with open(filename, "w") as fid:
@@ -150,3 +143,7 @@ class MainWindow(QMainWindow):
 
             value = DataAnalyzer.process(measure, region_x, region_y)
             row["label"].setText(f"{value:0.5f}")
+
+    def update_ui_from_series(self):
+        self.ui.mpl_canvas.draw_data(self.data)
+        self.ui.set_channels(len(self.data))
