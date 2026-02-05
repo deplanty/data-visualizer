@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLabel,
     QDoubleSpinBox,
+    QCheckBox,
 )
 
 
@@ -37,11 +38,22 @@ class DialogMultiInputUi:
         self.glayout.addWidget(label, self._row, 0)
         value = QDoubleSpinBox()
         value.setValue(default)
+        value.setMinimum(-9999)
+        value.setMaximum(9999)
         value.setSuffix(suffix)
         self.glayout.addWidget(value, self._row, 1)
 
         self._row += 1
         self.items[text] = value
+
+    def add_input_bool(self, text: str, default: bool = False):
+        check = QCheckBox()
+        check.setText(text)
+        check.setChecked(default)
+        self.glayout.addWidget(check, self._row, 0, 1, 2)
+
+        self._row += 1
+        self.items[text] = check
 
 
 class DialogMultiInput(QDialog):
@@ -69,10 +81,18 @@ class DialogMultiInput(QDialog):
     def add_input_float(self, text: str, suffix: str = "", default: float = 0):
         self.ui.add_input_float(text, suffix, default)
 
+    def add_input_bool(self, text: str, default: bool = False):
+        self.ui.add_input_bool(text, default)
+
     def get_values(self) -> dict[str, Any]:
         values = dict()
 
         for key, widget in self.ui.items.items():
-            values[key] = widget.value()
+            if hasattr(widget, "value"):
+                values[key] = widget.value()
+            elif hasattr(widget, "isChecked"):
+                values[key] = widget.isChecked()
+            else:
+                raise NotImplementedError("Widget {widget} not implemented yet")
 
         return values

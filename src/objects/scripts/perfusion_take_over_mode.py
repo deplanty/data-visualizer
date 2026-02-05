@@ -92,6 +92,7 @@ def analyze_tom(
     detection: float,
     duration_mean: float = 60,
     tom_min_duration: float = 5,
+    display_smoothed: bool = False,
 ):
     """
     Analyze the Take Over Mode of the given region.
@@ -126,10 +127,11 @@ def analyze_tom(
     y_unspiked = remove_spikes_bis(y_selected, window=50, height_factor=1.25)
 
     # Add a series to display the curved with the spikes removed
-    series = Series()
-    series.set_values(remove_spikes_bis(y, window=50, height_factor=1.25))  # type: ignore
-    series.set(title="Smooth", unit=data.y[0].unit)
-    data.add_series(series)
+    if display_smoothed:
+        series = Series()
+        series.set_values(remove_spikes_bis(y, window=50, height_factor=1.25))  # type: ignore
+        series.set(title="Smooth", unit=data.y[0].unit)
+        data.add_series(series)
 
     # Determine the threshold to detect the start and end of TOM
     delta = np.max([mean_first, mean_last]) - np.min(y_unspiked)
@@ -160,11 +162,11 @@ def analyze_tom(
     mean_tom = np.mean(y_selected[tom_start_index:tom_end_index])
 
     y_unit = data.y[0].unit
-    pl.log(f"Detection: {detection * 100:2.1f}%")
-    pl.log(f"Mean before TOM: {mean_first:.2f} {y_unit}")
-    pl.log(f"Mean after TOM: {mean_last:.2f} {y_unit}")
-    pl.log(f"Mean TOM: {mean_tom:.2f} {y_unit}")
-    pl.log(f"Duration: {tom_end - tom_start:.1f} s")
+    pl.log("Results:")
+    pl.log(f" - Mean before TOM: {mean_first:.2f} {y_unit}")
+    pl.log(f" - Mean after TOM: {mean_last:.2f} {y_unit}")
+    pl.log(f" - Mean TOM: {mean_tom:.2f} {y_unit}")
+    pl.log(f" - Duration: {tom_end - tom_start:.1f} s")
     pl.log("")
 
 
@@ -177,6 +179,8 @@ class PerfusionTakeOverModeScript(BaseScript):
         dialog = DialogMultiInput()
         dialog.add_input_float("Percent of Peak-Peak", "%", 50)
         dialog.add_input_float("Duration to compute mean", "s", 60)
+        dialog.add_input_float("TOM mean duration", "s", 5)
+        dialog.add_input_bool("Display smoothed curve", False)
         dialog.exec()
 
         if not dialog.confirmed:
@@ -185,5 +189,11 @@ class PerfusionTakeOverModeScript(BaseScript):
         values = dialog.get_values()
         detection = values["Percent of Peak-Peak"] / 100
         duration_mean = values["Duration to compute mean"]
+        tom_mean_duration = values["TOM mean duration"]
+        display_smoothed = values["Display smoothed curve"]
 
-        analyze_tom(data, cursor, detection, duration_mean)
+        pl.log("Execute script: Perfusion evaluation of the Take Over Mode")
+        for key, value in dialog.get_values().items():
+            pl.log(f" - {key}: {value}")
+
+        analyze_tom(data, cursor, detection, duration_mean, tom_mean_duration, display_smoothed)
