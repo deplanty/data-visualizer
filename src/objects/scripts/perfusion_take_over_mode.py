@@ -192,8 +192,10 @@ class PerfusionTakeOverModeScript(BaseScript):
         tom_mean_duration = values["TOM mean duration"]
         display_smoothed = values["Display smoothed curve"]
 
-        pl.log("Execute script: Perfusion evaluation of the Take Over Mode")
+        pl.log(f"{cls.name}")
         pl.log(f" - Filename: {acquisition.filename}")
+        pl.log(f"- Time start: {cursor.start:.2f}")
+        pl.log(f"- Time end: {cursor.end:.2f}")
         for key, value in dialog.get_values().items():
             pl.log(f" - {key}: {value}")
 
