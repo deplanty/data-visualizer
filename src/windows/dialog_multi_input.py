@@ -37,9 +37,9 @@ class DialogMultiInputUi:
         label.setText(text)
         self.glayout.addWidget(label, self._row, 0)
         value = QDoubleSpinBox()
+        value.setMinimum(-float("inf"))
+        value.setMaximum(float("inf"))
         value.setValue(default)
-        value.setMinimum(-9999)
-        value.setMaximum(9999)
         value.setSuffix(suffix)
         self.glayout.addWidget(value, self._row, 1)
 

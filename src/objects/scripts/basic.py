@@ -1,30 +1,32 @@
-from PySide6.QtWidgets import QDialog, QInputDialog
+from typing import TYPE_CHECKING
 
 from src.objects.scripts_loader import BaseScript
+from src.windows import DialogMultiInput
+import src.preload as pl
+
+if TYPE_CHECKING:
+    from src.objects import Acquisition, GraphCursor
 
 
 class SelectTimeScript(BaseScript):
     name = "Select time..."
-    description = "Set the cursor at the specified time"
+    description = "Set the cursor at the specified time."
 
     @classmethod
-    def process(cls, acquisition, cursor):
-        root = QDialog()
-        start, ok_s = QInputDialog.getDouble(root, "Hello", "Label", cursor.start)
-        if not ok_s:
+    def process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
+        dialog = DialogMultiInput()
+        dialog.add_input_float("Start time", "s", cursor.start)
+        dialog.add_input_float("End time", "s", cursor.end)
+        dialog.exec()
+
+        if not dialog.confirmed:
             return
 
-        end, ok_e = QInputDialog.getDouble(root, "Hello 2", "Label 2", cursor.start)
-        if not ok_e:
-            return
-
+        values = dialog.get_values()
+        start = values["Start time"]
+        end = values["End time"]
         cursor.set_and_emit(start, end)
-
-
-class GetValuesScript(BaseScript):
-    name = "Get values"
-    description = "Print the data and the cursor"
-
-    @classmethod
-    def process(cls, acquisition, cursor):
-        print(acquisition, cursor)
+        pl.log(cls.name)
+        pl.log(f" - Start time: {cursor.start}")
+        pl.log(f" - End time: {cursor.end}")
+        pl.log("")
