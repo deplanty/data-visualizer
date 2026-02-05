@@ -2,6 +2,7 @@ import abc
 import importlib
 
 from .series import SeriesCollection
+from .acquisition import Acquisition
 
 
 class BaseLoader(abc.ABC):
@@ -9,11 +10,11 @@ class BaseLoader(abc.ABC):
     file_desc: str
 
     def __init__(self):
-        self.data = SeriesCollection()
+        self.data = Acquisition()
 
-    @staticmethod
+    @classmethod
     @abc.abstractmethod
-    def load(filename: str) -> SeriesCollection:
+    def load(cls, filename: str) -> SeriesCollection:
         pass
 
     @classmethod
@@ -33,14 +34,15 @@ class DataLoader:
         cls.loaders = BaseLoader.__subclasses__()
 
     @classmethod
-    def load(cls, filename: str, file_type: str) -> SeriesCollection:
+    def load(cls, filename: str, file_type: str) -> Acquisition:
         """Use the correct loader to read `filename` with the type `file_type`."""
 
         for loader in cls.loaders:
             if loader.get_file_type() == file_type:
-                return loader.load(filename)
+                series = loader.load(filename)
+                return Acquisition(filename, file_type, series)
         else:
-            return SeriesCollection()
+            return Acquisition()
 
     @classmethod
     def list_all_file_type(cls):

@@ -6,8 +6,8 @@ class CsvCommaLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV comma separated values"
 
-    @staticmethod
-    def load(filename: str) -> SeriesCollection:
+    @classmethod
+    def load(cls, filename: str) -> SeriesCollection:
         sep = ","
         data = SeriesCollection()
         with open(filename, "r") as fid:
@@ -31,8 +31,8 @@ class CsvTabLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV tab separated values"
 
-    @staticmethod
-    def load(filename: str) -> SeriesCollection:
+    @classmethod
+    def load(cls, filename: str) -> SeriesCollection:
         sep = "\t"
         data = SeriesCollection()
         with open(filename, "r") as fid:
@@ -56,8 +56,8 @@ class CsvSemicolonLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV semicolon separated values"
 
-    @staticmethod
-    def load(filename: str) -> SeriesCollection:
+    @classmethod
+    def load(cls, filename: str) -> SeriesCollection:
         sep = ";"
         data = SeriesCollection()
         with open(filename, "r") as fid:

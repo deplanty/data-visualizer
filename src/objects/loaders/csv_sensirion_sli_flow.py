@@ -20,8 +20,8 @@ class CsvSensirionSliLoader(BaseLoader):
     file_ext = ["csv"]
     file_desc = "CSV from Sensirion SLI flow sensor"
 
-    @staticmethod
-    def load(filename: str) -> SeriesCollection:
+    @classmethod
+    def load(cls, filename: str) -> SeriesCollection:
         data = SeriesCollection()
         data.init(channels=1)
 

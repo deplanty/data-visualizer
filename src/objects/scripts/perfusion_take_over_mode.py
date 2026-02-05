@@ -10,7 +10,7 @@ from src.windows import DialogMultiInput
 import src.preload as pl
 
 if TYPE_CHECKING:
-    from src.objects import SeriesCollection, GraphCursor
+    from src.objects import Acquisition, SeriesCollection, GraphCursor
 
 
 def get_between(
@@ -171,11 +171,11 @@ def analyze_tom(
 
 
 class PerfusionTakeOverModeScript(BaseScript):
-    name = "Perfusion evaluation of the Take Over Mode"
+    name = "Perfusion evaluation of the Take Over Mode..."
     description = "Evaluate the Take Over Mode"
 
-    @staticmethod
-    def process(data, cursor):
+    @classmethod
+    def process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
         dialog = DialogMultiInput()
         dialog.add_input_float("Percent of Peak-Peak", "%", 50)
         dialog.add_input_float("Duration to compute mean", "s", 60)
@@ -193,7 +193,15 @@ class PerfusionTakeOverModeScript(BaseScript):
         display_smoothed = values["Display smoothed curve"]
 
         pl.log("Execute script: Perfusion evaluation of the Take Over Mode")
+        pl.log(f" - Filename: {acquisition.filename}")
         for key, value in dialog.get_values().items():
             pl.log(f" - {key}: {value}")
 
-        analyze_tom(data, cursor, detection, duration_mean, tom_mean_duration, display_smoothed)
+        analyze_tom(
+            acquisition.series,
+            cursor,
+            detection,
+            duration_mean,
+            tom_mean_duration,
+            display_smoothed,
+        )

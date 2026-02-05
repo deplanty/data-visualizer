@@ -7,8 +7,8 @@ class SelectTimeScript(BaseScript):
     name = "Select time..."
     description = "Set the cursor at the specified time"
 
-    @staticmethod
-    def process(data, cursor):
+    @classmethod
+    def process(cls, acquisition, cursor):
         root = QDialog()
         start, ok_s = QInputDialog.getDouble(root, "Hello", "Label", cursor.start)
         if not ok_s:
@@ -25,6 +25,6 @@ class GetValuesScript(BaseScript):
     name = "Get values"
     description = "Print the data and the cursor"
 
-    @staticmethod
-    def process(data, cursor):
-        print(data, cursor)
+    @classmethod
+    def process(cls, acquisition, cursor):
+        print(acquisition, cursor)

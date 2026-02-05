@@ -3,17 +3,18 @@ import importlib
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.objects.series import SeriesCollection
-    from src.objects.graph_cursor import GraphCursor
+    from src.objects import Acquisition
+    from src.objects import SeriesCollection
+    from src.objects import GraphCursor
 
 
 class BaseScript(abc.ABC):
     name: str
     description: str
 
-    @staticmethod
+    @classmethod
     @abc.abstractmethod
-    def process(data: "SeriesCollection", cursor: "GraphCursor"):
+    def process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
         pass
 
 
@@ -29,7 +30,7 @@ class ScriptsLoader:
         cls.scripts = BaseScript.__subclasses__()
 
     @classmethod
-    def process(cls, script_name: str, data, cursor):
+    def process(cls, script_name: str, data: "Acquisition", cursor: "GraphCursor"):
         for script in cls.scripts:
             if script.name == script_name:
                 return script.process(data, cursor)

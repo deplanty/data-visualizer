@@ -6,8 +6,8 @@ class Asl5000Loader(BaseLoader):
     file_ext = ["rwb"]
     file_desc = "ASL5000 raw binary data"
 
-    @staticmethod
-    def load(filename: str) -> SeriesCollection:
+    @classmethod
+    def load(cls, filename: str) -> SeriesCollection:
         data = SeriesCollection()
         data.init(channels=12)
 

@@ -3,7 +3,14 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PySide6.QtWidgets import QMainWindow, QFileDialog
 
-from src.objects import GraphCursor, DataLoader, SeriesCollection, DataAnalyzer, ScriptsLoader
+from src.objects import (
+    Acquisition,
+    GraphCursor,
+    DataLoader,
+    SeriesCollection,
+    DataAnalyzer,
+    ScriptsLoader,
+)
 from src.windows import ViewShowChannels
 import src.preload as pl
 
@@ -18,7 +25,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.data = SeriesCollection()
+        self.acquisition = Acquisition()
         self.graph_cursor = GraphCursor()
         self.graph_cursor.changed.connect(self._on_cursor_changed)
 
@@ -61,19 +68,19 @@ class MainWindow(QMainWindow):
 
     def _on_menu_file_saveselectionas_triggered(self):
         filename = "test/export.csv"
-        data = self.data.from_cursor(self.graph_cursor)
+        data = self.acquisition.series.from_cursor(self.graph_cursor)
         self.save_to_file(data, filename)
 
     def _on_menu_view_show_channels_triggered(self):
-        dialog = ViewShowChannels(self.data)
+        dialog = ViewShowChannels(self.acquisition.series)
         dialog.exec()
         if dialog.has_changed():
             # Redraw to show only selected channels
-            self.ui.mpl_canvas.draw_data(self.data)
+            self.ui.mpl_canvas.draw_data(self.acquisition.series)
 
     def _on_menu_scripts_triggered(self):
         action: "QAction" = self.sender()  # type: ignore
-        ScriptsLoader.process(action.text(), self.data, self.graph_cursor)
+        ScriptsLoader.process(action.text(), self.acquisition, self.graph_cursor)
 
     def _on_selection_changed(self, xmin: float, xmax: float):
         """
@@ -107,8 +114,8 @@ class MainWindow(QMainWindow):
     # Methods
 
     def load_from_file(self, filename: str, file_type: str):
-        self.data = DataLoader.load(filename, file_type)
-        self.data.changed.connect(self._on_data_changed)
+        self.acquisition = DataLoader.load(filename, file_type)
+        self.acquisition.series.changed.connect(self._on_data_changed)
         self.update_ui_from_series()
 
     def save_to_file(self, data: SeriesCollection, filename: str):
@@ -121,7 +128,8 @@ class MainWindow(QMainWindow):
 
     def process_measures(self, xmin: float, xmax: float):
         # Process the selection
-        x = self.data.get_x_data()
+        series = self.acquisition.series
+        x = series.get_x_data()
 
         i_min, i_max = np.searchsorted(x, (xmin, xmax))
         i_max = min(len(x) - 1, i_max)
@@ -139,11 +147,11 @@ class MainWindow(QMainWindow):
                 continue
 
             channel = int(row["channel"].currentText()) - 1
-            region_y = self.data.get_y_data(channel, (i_min, i_max))
+            region_y = series.get_y_data(channel, (i_min, i_max))
 
             value = DataAnalyzer.process(measure, region_x, region_y)
             row["label"].setText(f"{value:0.5f}")
 
     def update_ui_from_series(self):
-        self.ui.mpl_canvas.draw_data(self.data)
-        self.ui.set_channels(len(self.data))
+        self.ui.mpl_canvas.draw_data(self.acquisition.series)
+        self.ui.set_channels(len(self.acquisition.series))

@@ -6,8 +6,8 @@ class CsvTempalceLoader(BaseLoader):
     file_ext = [""]
     file_desc = ""
 
-    @staticmethod
-    def load(filename: str) -> SeriesCollection:
+    @classmethod
+    def load(cls, filename: str) -> SeriesCollection:
         data = SeriesCollection()
         data.init(channels=1)
 
