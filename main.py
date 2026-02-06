@@ -5,6 +5,7 @@ import sys
 from PySide6 import QtWidgets
 
 import src.preload
+from src import logger
 from src.frames import MainWindow
 
 
@@ -21,6 +22,7 @@ class Application(QtWidgets.QApplication):
             int: exit code
         """
 
+        logger.debug("Start application")
         self.window.show()
         return self.exec()
 
@@ -28,4 +30,6 @@ class Application(QtWidgets.QApplication):
 if __name__ == "__main__":
     # Start application
     app = Application(sys.argv)
-    sys.exit(app.run())
+    code = app.run()
+    logger.debug(f"Stop application with code {code}")
+    sys.exit(code)

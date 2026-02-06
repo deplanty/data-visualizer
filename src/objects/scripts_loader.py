@@ -2,6 +2,8 @@ import abc
 import importlib
 from typing import TYPE_CHECKING
 
+from src import logger
+
 if TYPE_CHECKING:
     from src.objects import Acquisition
     from src.objects import SeriesCollection
@@ -14,8 +16,14 @@ class BaseScript(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
+    def _process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
         pass
+
+    @classmethod
+    def process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
+        logger.info(f'Run script "{cls.name}"')
+        logger.journal(cls.name)
+        cls._process(acquisition, cursor)
 
 
 class ScriptsLoader:

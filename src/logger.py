@@ -38,6 +38,10 @@ def info(text: str = ""):
     _logger.info(text)
 
 
+def warning(text: str = ""):
+    _logger.warning(text)
+
+
 def journal(text: str = ""):
     if dock_journal:
         dock_journal.log(text)

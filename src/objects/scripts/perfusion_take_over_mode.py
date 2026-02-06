@@ -175,7 +175,7 @@ class PerfusionTakeOverModeScript(BaseScript):
     description = "Evaluate the Take Over Mode"
 
     @classmethod
-    def process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
+    def _process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
         dialog = DialogMultiInput()
         dialog.add_input_float("Percent of Peak-Peak", "%", 50)
         dialog.add_input_float("Duration to compute mean", "s", 60)
@@ -192,7 +192,6 @@ class PerfusionTakeOverModeScript(BaseScript):
         tom_mean_duration = values["TOM mean duration"]
         display_smoothed = values["Display smoothed curve"]
 
-        logger.journal(f"{cls.name}")
         logger.journal(f" - Filename: {acquisition.filename}")
         logger.journal(f"- Time start: {cursor.start:.2f}")
         logger.journal(f"- Time end: {cursor.end:.2f}")

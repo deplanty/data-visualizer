@@ -1,6 +1,8 @@
 import abc
 import importlib
 
+from src import logger
+
 from .series import SeriesCollection
 from .acquisition import Acquisition
 
@@ -40,8 +42,10 @@ class DataLoader:
         for loader in cls.loaders:
             if loader.get_file_type() == file_type:
                 series = loader.load(filename)
+                logger.info(f'Load file "{filename}" with file type "{file_type}"')
                 return Acquisition(filename, file_type, series)
         else:
+            logger.warning(f'Couldn\'t load "{filename}" with file type "{file_type}"')
             return Acquisition()
 
     @classmethod
