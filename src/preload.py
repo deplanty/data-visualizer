@@ -10,14 +10,7 @@ from src.objects import ScriptsLoader
 if TYPE_CHECKING:
     from src.widgets import DockJournal
 
+# Initialize the loaders, analyzers and scripts
 DataLoader.init()
 DataAnalyzer.init()
 ScriptsLoader.init()
-
-
-logger: "DockJournal | None" = None
-
-
-def log(text: str):
-    if logger:
-        logger.log(text)

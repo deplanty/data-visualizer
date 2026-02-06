@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from src.objects.scripts_loader import BaseScript
 from src.windows import DialogMultiInput
-import src.preload as pl
+from src import logger
 
 if TYPE_CHECKING:
     from src.objects import Acquisition, GraphCursor
@@ -26,7 +26,7 @@ class SelectTimeScript(BaseScript):
         start = values["Start time"]
         end = values["End time"]
         cursor.set_and_emit(start, end)
-        pl.log(cls.name)
-        pl.log(f" - Start time: {cursor.start}")
-        pl.log(f" - End time: {cursor.end}")
-        pl.log("")
+        logger.journal(cls.name)
+        logger.journal(f" - Start time: {cursor.start}")
+        logger.journal(f" - End time: {cursor.end}")
+        logger.journal("")

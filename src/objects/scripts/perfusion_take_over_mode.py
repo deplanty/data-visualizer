@@ -7,7 +7,7 @@ from scipy.signal import savgol_filter
 from src.objects.scripts_loader import BaseScript
 from src.objects import Series
 from src.windows import DialogMultiInput
-import src.preload as pl
+from src import logger
 
 if TYPE_CHECKING:
     from src.objects import Acquisition, SeriesCollection, GraphCursor
@@ -162,12 +162,12 @@ def analyze_tom(
     mean_tom = np.mean(y_selected[tom_start_index:tom_end_index])
 
     y_unit = data.y[0].unit
-    pl.log("Results:")
-    pl.log(f" - Mean before TOM: {mean_first:.2f} {y_unit}")
-    pl.log(f" - Mean after TOM: {mean_last:.2f} {y_unit}")
-    pl.log(f" - Mean TOM: {mean_tom:.2f} {y_unit}")
-    pl.log(f" - Duration: {tom_end - tom_start:.1f} s")
-    pl.log("")
+    logger.journal("Results:")
+    logger.journal(f" - Mean before TOM: {mean_first:.2f} {y_unit}")
+    logger.journal(f" - Mean after TOM: {mean_last:.2f} {y_unit}")
+    logger.journal(f" - Mean TOM: {mean_tom:.2f} {y_unit}")
+    logger.journal(f" - Duration: {tom_end - tom_start:.1f} s")
+    logger.journal("")
 
 
 class PerfusionTakeOverModeScript(BaseScript):
@@ -192,12 +192,12 @@ class PerfusionTakeOverModeScript(BaseScript):
         tom_mean_duration = values["TOM mean duration"]
         display_smoothed = values["Display smoothed curve"]
 
-        pl.log(f"{cls.name}")
-        pl.log(f" - Filename: {acquisition.filename}")
-        pl.log(f"- Time start: {cursor.start:.2f}")
-        pl.log(f"- Time end: {cursor.end:.2f}")
+        logger.journal(f"{cls.name}")
+        logger.journal(f" - Filename: {acquisition.filename}")
+        logger.journal(f"- Time start: {cursor.start:.2f}")
+        logger.journal(f"- Time end: {cursor.end:.2f}")
         for key, value in dialog.get_values().items():
-            pl.log(f" - {key}: {value}")
+            logger.journal(f" - {key}: {value}")
 
         analyze_tom(
             acquisition.series,

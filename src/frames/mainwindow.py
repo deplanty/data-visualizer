@@ -13,6 +13,7 @@ from src.objects import (
 )
 from src.windows import ViewShowChannels
 import src.preload as pl
+from src import logger
 
 from .mainwindow_ui import MainWindowUI
 
@@ -46,7 +47,7 @@ class MainWindow(QMainWindow):
             row["measure"].activated.connect(self._on_combobox_changed)
             row["channel"].activated.connect(self._on_combobox_changed)
 
-        pl.logger = self.ui.journal
+        logger.set_journal(self.ui.journal)
 
     # Events
 
