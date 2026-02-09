@@ -20,7 +20,6 @@ class Color:
 
     @property
     def r(self):
-        print(self._rgb)
         return self._rgb[0]
 
     @property
