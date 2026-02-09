@@ -15,8 +15,8 @@ from src.objects import SeriesCollection, colors
 mpl.rc("lines", linewidth=0.5)
 
 
-class MplCanvas(FigureCanvasQTAgg):
-    signal_selection_changed = Signal(float, float)
+class FigureCanvas(FigureCanvasQTAgg):
+    selection_changed = Signal(float, float)
 
     ch_colors = itertools.cycle(
         [
@@ -31,7 +31,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(self, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
-        super(MplCanvas, self).__init__(self.fig)
+        super(FigureCanvas, self).__init__(self.fig)
 
         self.toolbar = NavigationToolbar2QT(self)
 
@@ -41,7 +41,7 @@ class MplCanvas(FigureCanvasQTAgg):
     # Events
 
     def _on_selection_changed(self, xmin, xmax):
-        self.signal_selection_changed.emit(xmin, xmax)
+        self.selection_changed.emit(xmin, xmax)
 
     # Method
 
@@ -83,7 +83,6 @@ class MplCanvas(FigureCanvasQTAgg):
                 props=dict(facecolor="black", alpha=0.05),
                 interactive=True,
                 drag_from_anywhere=True,
-                onmove_callback=self._on_selection_changed,
             )
             self.spans.append(span)
             i += 1

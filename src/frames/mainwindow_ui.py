@@ -13,9 +13,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
 from src.objects import DataAnalyzer
-from src.widgets import DockJournal
-
-from .mpl_canvas import MplCanvas
+from src.widgets import DockJournal, FigureCanvas
 
 
 class MainWindowUI:
@@ -84,9 +82,9 @@ class MainWindowUI:
         # Graph and navigation toolbox
         self.layout_h.addLayout(self.layout_grid, 1)
         self.layout_v_graph = QVBoxLayout()
-        self.mpl_canvas = MplCanvas()
-        self.layout_v_graph.addWidget(self.mpl_canvas)
-        self.layout_v_graph.addWidget(self.mpl_canvas.toolbar)  # type: ignore
+        self.figure_canvas = FigureCanvas()
+        self.layout_v_graph.addWidget(self.figure_canvas)
+        self.layout_v_graph.addWidget(self.figure_canvas.toolbar)  # type: ignore
         self.layout_h.addLayout(self.layout_v_graph, 5)
         frame.setLayout(self.layout_h)
 

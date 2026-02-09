@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         for name in ScriptsLoader.list_all():
             menu = self.ui.add_script_menu(name)
             menu.triggered.connect(self._on_menu_scripts_triggered)
-        self.ui.mpl_canvas.signal_selection_changed.connect(self._on_selection_changed)
+        self.ui.figure_canvas.selection_changed.connect(self._on_selection_changed)
         for row in self.ui.grid:
             row["measure"].activated.connect(self._on_combobox_changed)
             row["channel"].activated.connect(self._on_combobox_changed)
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         dialog.exec()
         if dialog.has_changed():
             # Redraw to show only selected channels
-            self.ui.mpl_canvas.draw_data(self.acquisition.series)
+            self.ui.figure_canvas.draw_data(self.acquisition.series)
 
     def _on_menu_scripts_triggered(self):
         action: "QAction" = self.sender()  # type: ignore
@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         """
         # Check if the selection is set or not
 
-        for span in self.ui.mpl_canvas.spans:
+        for span in self.ui.figure_canvas.spans:
             span.extents = (xmin, xmax)
             span.set_visible(True)
 
@@ -101,12 +101,12 @@ class MainWindow(QMainWindow):
         self.process_measures(xmin, xmax)
 
     def _on_cursor_changed(self, xmin, xmax):
-        for span in self.ui.mpl_canvas.spans:
+        for span in self.ui.figure_canvas.spans:
             span.extents = (xmin, xmax)
             span.set_visible(True)
 
     def _on_combobox_changed(self):
-        xmin, xmax = self.ui.mpl_canvas.get_selection()
+        xmin, xmax = self.ui.figure_canvas.get_selection()
         self.process_measures(xmin, xmax)
 
     def _on_data_changed(self):
@@ -154,5 +154,5 @@ class MainWindow(QMainWindow):
             row["label"].setText(f"{value:0.5f}")
 
     def update_ui_from_series(self):
-        self.ui.mpl_canvas.draw_data(self.acquisition.series)
+        self.ui.figure_canvas.draw_data(self.acquisition.series)
         self.ui.set_channels(len(self.acquisition.series))
