@@ -78,8 +78,8 @@ class Series:
     def set_visible(self, enabled: bool):
         self.visible = enabled
 
-    def set_color(self, color: tuple):
-        self.color = colors.Color(color)
+    def set_color(self, color: colors.Color):
+        self.color = color
 
     def set(self, **kwargs):
         """
@@ -119,8 +119,8 @@ class SeriesCollection(QObject):
     def __init__(self):
         super().__init__()
 
-        self._x = Series()
-        self._y = list()
+        self._x: Series = Series()
+        self._y: list[Series] = list()
 
     def __len__(self):
         return len(self._y)
@@ -132,7 +132,7 @@ class SeriesCollection(QObject):
         return self._x
 
     @property
-    def y(self):
+    def y(self) -> list[Series]:
         return self._y
 
     # Getter setter
@@ -200,13 +200,13 @@ class SeriesCollection(QObject):
         data.x.set_values(self.x.values[i_min:i_max])
         data.x.set_title(title=self.x.title)
         data.x.set_unit(self.x.unit)
-        data.x.set_color(self.x.color.rgb)
+        data.x.set_color(self.x.color)
 
         for i, y in enumerate([y for y in self.y if y.visible]):
             data.y[i].set_values(y.values[i_min:i_max])
             data.y[i].set_title(y.title)
             data.y[i].set_unit(y.unit)
-            data.y[i].set_color(y.color.rgb)
+            data.y[i].set_color(y.color)
 
         return data
 

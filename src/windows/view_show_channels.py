@@ -110,7 +110,7 @@ class ViewShowChannels(QDialog):
         color = dialog.selectedColor()
         if color.isValid():
             color = colors.from_rgba_int(color.toTuple())  # type: ignore
-            self.data.y[index].set(color=color)
+            self.data.y[index].set_color(color)
             self.ui.l_colors[index].setStyleSheet(f"background-color: {color.hex}")
 
     # Methods
