@@ -1,5 +1,8 @@
 from PySide6.QtCore import Signal, QObject
 
+# Very small value
+EPSILON = 1e-6
+
 
 class GraphCursor(QObject):
     changed = Signal(float, float)
@@ -35,3 +38,6 @@ class GraphCursor(QObject):
     def set_and_emit(self, start: float, end: float):
         self.set(start, end)
         self.changed.emit(start, end)
+
+    def has_range(self) -> bool:
+        return self.end - self.start > EPSILON

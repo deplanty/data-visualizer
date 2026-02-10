@@ -176,6 +176,13 @@ class PerfusionTakeOverModeScript(BaseScript):
 
     @classmethod
     def _process(cls, acquisition: "Acquisition", cursor: "GraphCursor"):
+
+        if not cursor.has_range():
+            dialog = DialogMultiInput()
+            dialog.add_text_line("An interval should be set before calling the script.")
+            dialog.exec()
+            return
+
         dialog = DialogMultiInput()
         dialog.add_input_float("Percent of Peak-Peak", "%", 50)
         dialog.add_input_float("Duration to compute mean", "s", 60)

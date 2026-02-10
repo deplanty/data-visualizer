@@ -55,6 +55,13 @@ class DialogMultiInputUi:
         self._row += 1
         self.items[text] = check
 
+    def add_text_line(self, text: str):
+        label = QLabel()
+        label.setText(text)
+        self.glayout.addWidget(label, self._row, 0, 1, 2)
+
+        self._row += 1
+
 
 class DialogMultiInput(QDialog):
     def __init__(self):
@@ -83,6 +90,9 @@ class DialogMultiInput(QDialog):
 
     def add_input_bool(self, text: str, default: bool = False):
         self.ui.add_input_bool(text, default)
+
+    def add_text_line(self, text: str):
+        self.ui.add_text_line(text)
 
     def get_values(self) -> dict[str, Any]:
         values = dict()
