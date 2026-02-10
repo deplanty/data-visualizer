@@ -15,3 +15,4 @@ python-dateutil>=2.9.0.post0
 scipy>=1.17.0
 shiboken6>=6.10.2
 six>=1.17.0
+toml>=0.10.2
