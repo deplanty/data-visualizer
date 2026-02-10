@@ -11,7 +11,7 @@ from src.objects import (
     DataAnalyzer,
     ScriptsLoader,
 )
-from src.windows import ViewShowChannels
+from src.windows import ViewShowChannels, DialogOpenAcquisition
 import src.preload as pl
 from src import logger
 
@@ -55,15 +55,12 @@ class MainWindow(QMainWindow):
         self.close()
 
     def _on_menu_file_open_triggered(self):
-        valid_files = ";;".join(
-            [
-                *DataLoader.list_all_file_type(),
-                "All Files (*.*)",
-            ]
-        )
-        filename, file_type = QFileDialog.getOpenFileName(self, "Open a file", "", valid_files)
-        if not filename:
+        dialog = DialogOpenAcquisition()
+        dialog.exec()
+        if not dialog.confirmed:
             return
+
+        filename, file_type = dialog.get_values()
 
         self.load_from_file(filename, file_type)
 

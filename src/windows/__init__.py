@@ -1,2 +1,3 @@
 from .dialog_multi_input import DialogMultiInput
+from .dialog_open_acquisition import DialogOpenAcquisition
 from .view_show_channels import ViewShowChannels

@@ -18,7 +18,7 @@ class Application(QApplication):
         if pl.settings.get("application/maximized"):
             self.window.setWindowState(Qt.WindowState.WindowMaximized)
 
-        self.aboutToQuit.connect
+        self.aboutToQuit.connect(self._on_about_to_quit)
 
     # Events
 

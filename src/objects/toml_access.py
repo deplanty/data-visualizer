@@ -17,12 +17,22 @@ class TomlAccess:
 
     @classmethod
     def in_userdata(cls, filename: str):
-        # Initialize the module by loading the  data in the user data
+        # Initialize the settings with the default values
+        with open(os.path.join("userdata", filename), encoding="utf-8") as fid:
+            default = toml.load(fid)
+
         path = os.path.expanduser(os.path.join("~", ".data-visualizer", filename))
+        # Copy the default values if the user has no userdata
         if not os.path.exists(path):
             shutil.copyfile(os.path.join("userdata", filename), path)
+            userdata = cls(path)
+        # Update the default values with the user's
+        else:
+            userdata = cls(path)
+            default.update(userdata._settings)
+            userdata._settings = default
 
-        return cls(path)
+        return userdata
 
     # Public methods
 
