@@ -47,6 +47,8 @@ class FigureCanvas(FigureCanvasQTAgg):
 
     def draw_data(self, data: SeriesCollection):
         self.fig.clear()
+        self.spans.clear()
+
         rows = data.size(only_show=True)
         # Manage subplot return value
         if rows == 0:

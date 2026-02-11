@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtWidgets import QMainWindow, QFileDialog
+from PySide6.QtWidgets import QMainWindow
 
 from src.objects import (
     Acquisition,
@@ -12,7 +12,6 @@ from src.objects import (
     ScriptsLoader,
 )
 from src.windows import ViewShowChannels, DialogOpenAcquisition
-import src.preload as pl
 from src import logger
 
 from .mainwindow_ui import MainWindowUI
