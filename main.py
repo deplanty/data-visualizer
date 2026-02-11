@@ -9,6 +9,9 @@ import src.preload as pl
 from src import logger
 from src.frames import MainWindow
 
+# Import the resources for Qt
+import resources
+
 
 class Application(QApplication):
     def __init__(self, argv: list):

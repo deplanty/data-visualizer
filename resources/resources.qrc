@@ -1,0 +1,6 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/icons">
+    <file alias="open-file">images/icons8-document-in-folder-24.png</file>
+  </qresource>
+</RCC>

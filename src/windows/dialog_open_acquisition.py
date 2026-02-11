@@ -1,3 +1,5 @@
+import os
+
 from PySide6.QtWidgets import (
     QWidget,
     QComboBox,
@@ -10,6 +12,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
 )
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QIcon
 
 from src.objects import DataLoader
 import src.preload as pl
@@ -23,25 +26,46 @@ class WidgetOpenAcquisition(QWidget):
 
         self._file_types: list[str] = list()
         self._file_type_selected = str()
+        self._filename_selected = str()
 
         # A very simple UI
         hlayout = QHBoxLayout()
         self.setLayout(hlayout)
-        self.label = QLabel()
-        hlayout.addWidget(self.label)
+
+        self._label = QLabel()
+        self._label.setText("...")
+        hlayout.addWidget(self._label, stretch=1)
         button_open = QPushButton()
+        button_open.setIcon(QIcon(":/icons/open-file"))
         hlayout.addWidget(button_open)
 
         # Connect signals
         button_open.clicked.connect(self._on_button_open_clicked)
+
+    # Properties
+
+    @property
+    def filename_selected(self) -> str:
+        return self._filename_selected
+
+    # Events
 
     def _on_button_open_clicked(self):
         valid_files = ";;".join(self._file_types)
         filename, file_type = QFileDialog.getOpenFileName(
             self, "Open a file", "", valid_files, self._file_type_selected
         )
-        self.label.setText(filename)
+
+        if not filename:
+            return
+
+        # Shorten the filename to limit the size of the window and show the full path as a tooltip
+        self._label.setText(os.path.basename(filename))
+        self._label.setToolTip(filename)
+        self._filename_selected = filename
         self.file_selected.emit(filename, file_type)
+
+    # Methods
 
     def set_file_types(self, file_types: list[str], selected: str = ""):
         self._file_types = file_types
@@ -96,8 +120,12 @@ class DialogOpenAcquisition(QDialog):
         pl.settings.set("last_open_file_type", file_type)
 
     def _on_button_confirm_clicked(self):
-        self.confirmed = True
-        self.accept()
+        if self.ui.ask_open.filename_selected:
+            self.confirmed = True
+            self.accept()
+        else:
+            self.confirmed = False
+            self.reject()
 
     def _on_button_cancel_clicked(self):
         self.confirmed = False
@@ -111,4 +139,4 @@ class DialogOpenAcquisition(QDialog):
         :rtype: tuple(str, str)
         """
 
-        return self.ui.ask_open.label.text(), self.ui.loader.currentText()
+        return self.ui.ask_open.filename_selected, self.ui.loader.currentText()
