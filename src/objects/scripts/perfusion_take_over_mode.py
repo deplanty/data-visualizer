@@ -134,8 +134,10 @@ def analyze_tom(
         data.add_series(series)
 
     # Determine the threshold to detect the start and end of TOM
-    delta = np.max([mean_first, mean_last]) - np.min(y_unspiked)
-    y_detection = delta * detection
+    mean = np.max([mean_first, mean_last])
+    minimum = np.min(y_unspiked)
+    delta = mean - minimum
+    y_detection = minimum + (delta * detection)
 
     # Get the duration of the take over mode
     tom_start = 0
