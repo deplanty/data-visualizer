@@ -6,7 +6,7 @@
 
 @echo off
 
-pyside6-rcc resources/resources.qrc -o resources.py
+venv\Scripts\pyside6-rcc resources/resources.qrc -o resources.py
 
 echo Launch data-visualizer
 venv\Scripts\python main.py
